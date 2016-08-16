@@ -23,7 +23,9 @@ namespace DuiLib
 
 	public:
 		void NewPage(std::wstring Url);
-		void CCEFWebkitUI::DelPage(int idxDel);
+		void DelPage(int idxDel);
+		void CloseAllPage();
+		BOOL IsClosed() const ;
 	public:
 
 		//virtual void SetInnerVisible(bool bVisible = true)

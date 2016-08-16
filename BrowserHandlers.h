@@ -58,10 +58,11 @@ public:
 	std::wstring strCurURL_;//加载当前页的url
 	HWND hWnd_; //接收消息的句柄
 	CefString strTitle_; //网址标题
+	static int nBrowerReferenceCount_;
 private:
 	// Include the default reference counting implementation.
 	IMPLEMENT_REFCOUNTING(CCefClientHandler);
-	IMPLEMENT_LOCKING(CCefClientHandler);
+	//IMPLEMENT_LOCKING(CCefClientHandler);
 };
 
 

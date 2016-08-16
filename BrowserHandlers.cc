@@ -4,6 +4,10 @@
 #include <base/cef_bind.h>
 
 
+
+
+int CCefClientHandler::nBrowerReferenceCount_ = -1;
+
 CCefClientHandler::CCefClientHandler() :hWnd_(NULL), browser_(NULL)
 {
 
@@ -20,13 +24,16 @@ CefRefPtr<CefBrowser> CCefClientHandler::GetBrowser()
 
 
 // CefClient methods:
-CefRefPtr<CefDisplayHandler> CCefClientHandler::GetDisplayHandler() {
+CefRefPtr<CefDisplayHandler> CCefClientHandler::GetDisplayHandler()
+{
 	return this;
 }
-CefRefPtr<CefLifeSpanHandler> CCefClientHandler::GetLifeSpanHandler() {
+CefRefPtr<CefLifeSpanHandler> CCefClientHandler::GetLifeSpanHandler()
+{
 	return this;
 }
-CefRefPtr<CefLoadHandler> CCefClientHandler::GetLoadHandler() {
+CefRefPtr<CefLoadHandler> CCefClientHandler::GetLoadHandler()
+{
 	return this;
 }
 
@@ -41,10 +48,8 @@ CefRefPtr<CefRequestHandler> CCefClientHandler::GetRequestHandler()
 //// 缓存一个指向browser的引用
 void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
+	++nBrowerReferenceCount_;
 	browser_ = browser;
-
-	CefLifeSpanHandler::OnAfterCreated(browser);
-
 }
 
 // 1.  User clicks the window close button which sends an OS close
@@ -85,6 +90,9 @@ void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 
 bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 {
+	//CEF_REQUIRE_UI_THREAD();
+
+	browser_ = NULL;
 
 	return false;
 }
@@ -92,10 +100,17 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 
 void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
+	//CEF_REQUIRE_UI_THREAD();
 
-	CloseHostBrowser(true);
+	--nBrowerReferenceCount_;
 
-	CefQuitMessageLoop();
+	if (nBrowerReferenceCount_ < 0)
+	{
+		CefQuitMessageLoop();
+		//::PostQuitMessage(0L);
+		//SendMessage(hWnd_, UM_CEFCOMPLETEELEASE, 0, 0);
+	}
+
 }
 
 void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
@@ -115,7 +130,7 @@ void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFr
 
 void CCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl)
 {
-	CEF_REQUIRE_UI_THREAD();
+	//CEF_REQUIRE_UI_THREAD();
 
 	// Don't display an error for downloaded files.
 	if (errorCode == ERR_ABORTED)
@@ -140,15 +155,15 @@ void CCefClientHandler::CloseHostBrowser(bool force_close)
 
 void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title)
 {
-	CEF_REQUIRE_UI_THREAD();
+	//CEF_REQUIRE_UI_THREAD();
 	CefWindowHandle hwnd = browser->GetHost()->GetWindowHandle();
 	SetWindowText(hwnd, std::wstring(title).c_str());
 }
 
 
 
-bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,CefRefPtr<CefFrame> frame,const CefString& target_url,const CefString& target_frame_name,CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-bool user_gesture,const CefPopupFeatures& popupFeatures,CefWindowInfo& windowInfo,CefRefPtr<CefClient>& client,CefBrowserSettings& settings,bool* no_javascript_access)
+bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& target_url, const CefString& target_frame_name, CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+	bool user_gesture, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access)
 {
 	strCurURL_ = target_url;
 	::PostMessage(hWnd_, UM_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL_);

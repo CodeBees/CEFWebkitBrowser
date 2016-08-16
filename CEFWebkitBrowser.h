@@ -17,7 +17,7 @@ public:
     virtual CControlUI* CreateControl(LPCTSTR pstrClass);
 	virtual void OnFinalMessage(HWND hWnd);
 	virtual LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
+	virtual	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
     virtual void InitWindow();
     virtual void Notify(TNotifyUI& msg);
     virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -26,7 +26,7 @@ public:
     
     wstring strURL_;
     wstring strTitle_;
-    CCEFWebkitUI* pWKEWebkitUI; 
+    CCEFWebkitUI* pWKEWebkitUI_; 
 private:
     CRichEditUI*        pURLEditUI;
 

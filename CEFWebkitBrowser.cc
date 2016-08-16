@@ -16,11 +16,12 @@ CEFWebkitBrowserWnd::CEFWebkitBrowserWnd()
    // pWKEWebkitUI=NULL;
     pURLEditUI=NULL;
     pCEFWebkitBrowserWnd=this;
+	pWKEWebkitUI_ = NULL;
 }
 
 CEFWebkitBrowserWnd::~CEFWebkitBrowserWnd()
 {
-
+	int a = 30;
 }
 
 
@@ -28,7 +29,7 @@ CControlUI* CEFWebkitBrowserWnd::CreateControl( LPCTSTR pstrClassName )
 {
     if (_tcsicmp(pstrClassName, _T("CEFWebkitBrowser")) == 0)
     {
-        return  new CCEFWebkitUI(GetSafeHwnd());
+        return  (pWKEWebkitUI_=new CCEFWebkitUI(GetSafeHwnd()));
     }
 
     return NULL;
@@ -41,9 +42,25 @@ void CEFWebkitBrowserWnd::OnFinalMessage(HWND hWnd)
 	__super::OnFinalMessage(hWnd);
 }
 
-LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	//::PostQuitMessage(0L);
+
+	return __super::OnDestroy(uMsg,wParam,lParam,bHandled);
+}
+
+//½ØÈ¡WM_CLOSEÏûÏ¢
+LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+
+	if (!pWKEWebkitUI_->IsClosed())
+	{
+		pWKEWebkitUI_->CloseAllPage();
+		bHandled = TRUE;
+	}
+
+	bHandled = FALSE;
+
 	return 0;
 }
 
@@ -99,7 +116,7 @@ void CEFWebkitBrowserWnd::Notify( TNotifyUI& msg )
     {
         if (pURLEditUI==msg.pSender)
         {
-            if (pURLEditUI&&pWKEWebkitUI)
+            if (pURLEditUI&&pWKEWebkitUI_)
             {
                 //pWKEWebkitUI->LoadURL(pURLEditUI->GetText().GetData());
             }
@@ -111,6 +128,20 @@ void CEFWebkitBrowserWnd::Notify( TNotifyUI& msg )
 
 LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	int ss = 6;
+
+	switch (uMsg)
+	{
+	case UM_CEFCOMPLETEELEASE:
+		bHandled = TRUE;
+		PostQuitMessage(0L);
+		break;
+	case UM_WEBLOADPOPUP:
+		ss = 6;
+		break;
+	default:
+		break;
+	}
 
     bHandled=FALSE;
 

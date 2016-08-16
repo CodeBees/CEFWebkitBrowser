@@ -45,7 +45,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Specify CEF global settings here.
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
-	settings.single_process = true;                //使用多进程模式
+	settings.single_process = false;                //使用多进程模式
 	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
 	settings.command_line_args_disabled = true;
 	//CefString(&settings.locale).FromASCII("zh-CN");
@@ -73,12 +73,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 	//	绘制阴影
 
-	//CShadowWindow shadowwnd;
-	//CShadowWindow::Initialize(hInstance);
-	//shadowwnd.Create(pFrame.GetHWND());
-	//shadowwnd.SetSize(4);
-	//shadowwnd.SetPosition(4, 4);
-	//shadowwnd.SetColor(RGB(22, 22, 22));
+	CShadowWindow shadowwnd;
+	CShadowWindow::Initialize(hInstance);
+	shadowwnd.Create(pFrame.GetHWND());
+	shadowwnd.SetSize(4);
+	shadowwnd.SetPosition(4, 4);
+	shadowwnd.SetColor(RGB(22, 22, 22));
 
 	//   pFrame.ShowWindow(true);
 
@@ -97,7 +97,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	CefShutdown();
 
 	//退出程序并释放COM库
-	::CoUninitialize();
+//	::CoUninitialize();
 
 	return 0;
 }

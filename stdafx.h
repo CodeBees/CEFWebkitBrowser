@@ -21,6 +21,7 @@
 #include <base/cef_bind.h>
 #include <wrapper/cef_closure_task.h>
 #include <cef_app.h>
+#include <cef_base.h>
 #include <wrapper/cef_helpers.h>
 
 
@@ -61,7 +62,7 @@ using namespace DuiLib;
 #define  UM_WEBLOADSTART WM_USER+100
 #define  UM_WEBLOADEND   WM_USER+101
 #define  UM_WEBLOADPOPUP   WM_USER+102
-
+#define  UM_CEFCOMPLETEELEASE  WM_USER+103
 
 
 // TODO: 在此处引用程序需要的其他头文件
