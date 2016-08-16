@@ -14,6 +14,10 @@
                 <Button name="closebtn" width="32" height="21" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;title_close.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;0,0,32,20&apos;" hotimage="file=&apos;title_close.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;32,0,64,20&apos;" pushedimage="file=&apos;title_close.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;64,0,96,20&apos;" />
             </HorizontalLayout>
         </HorizontalLayout>
+        <HorizontalLayout name="ui_hl_urltabs" height="30">
+            <Option name="ui_opt_page0" text="www.baidu.com" width="100" height="30" textpadding="0,2,0,0" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal.png" hotimage="tabbar_hover.png" pushedimage="tabbar_pushed.png" group="demo_list_header" selected="true" selectedimage="tabbar_pushed.png" selectedtextcolor="#FF000000" />
+            <Option name="ui_btn_newpage" text=" + " tooltip="添加新页签" width="30" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal1.png" hotimage="tabbar_hover1.png" pushedimage="tabbar_pushed1.png" group="demo_list_header" selectedimage="tabbar_pushed1.png" selectedtextcolor="#FF000000" />
+        </HorizontalLayout>
         <VerticalLayout height="60" bkimage="Main-Tab.png" bkcolor="#FFFFFBF0" childpadding="2">
             <Control />
             <HorizontalLayout height="30">
@@ -28,8 +32,8 @@
                 <Button name="ui_btn_ensure" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;refresh.png&apos; dest=&apos;6,4,25,23&apos;" pushedimage="file=&apos;refresh-push.png&apos; dest=&apos;6,4,25,23&apos;" />
             </HorizontalLayout>
             <Control />
-        </VerticalLayout >
-        <HorizontalLayout bkcolor="FFFF0F00" >
+        </VerticalLayout>
+        <HorizontalLayout bkcolor="#FFFF0F00">
             <CEFWebkitBrowser bkcolor="FFFF0000" height="0" name="CEFWebkitBrowserUI1" size="0, 0" width="0" />
         </HorizontalLayout>
         <HorizontalLayout height="20">

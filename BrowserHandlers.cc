@@ -93,20 +93,19 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 	//CEF_REQUIRE_UI_THREAD();
 
 	browser_ = NULL;
-
+	//browser_->Release();
 	return false;
 }
 
 
 void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
-	//CEF_REQUIRE_UI_THREAD();
-
+	
 	--nBrowerReferenceCount_;
 
 	if (nBrowerReferenceCount_ < 0)
 	{
-		CefQuitMessageLoop();
+		//	CefQuitMessageLoop();
 		//::PostQuitMessage(0L);
 		//SendMessage(hWnd_, UM_CEFCOMPLETEELEASE, 0, 0);
 	}
@@ -117,13 +116,14 @@ void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 {
 
 	strCurURL_ = browser->GetMainFrame()->GetURL();
-	::PostMessageA(hWnd_, UM_WEBLOADSTART, NULL, (LPARAM)&strCurURL_);
+	::PostMessage(hWnd_, UM_WEBLOADSTART, NULL, (LPARAM)&strCurURL_);
 	return __super::OnLoadStart(browser, frame);
 }
 void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
 	strCurURL_ = browser->GetMainFrame()->GetURL();
-	::PostMessageA(hWnd_, UM_WEBLOADEND, NULL, (LPARAM)&strCurURL_);
+	::PostMessage(hWnd_, UM_WEBLOADEND, NULL, (LPARAM)&strCurURL_);
+	//strCurURL_.c_str();
 }
 
 

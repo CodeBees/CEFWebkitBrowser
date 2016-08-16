@@ -22,12 +22,15 @@ public:
     virtual void Notify(TNotifyUI& msg);
     virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
+	void OnInitComplate();
+public:
     static CEFWebkitBrowserWnd* pCEFWebkitBrowserWnd;
     
     wstring strURL_;
     wstring strTitle_;
-    CCEFWebkitUI* pWKEWebkitUI_; 
+    CCEFWebkitUI* pWKEWebkitCtrl_; 
 private:
-    CRichEditUI*        pURLEditUI;
+    CRichEditUI*        pURLEditCtrl_;
+	CLabelUI*			pWebStateCtrl_;
 
 };

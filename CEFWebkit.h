@@ -26,6 +26,10 @@ namespace DuiLib
 		void DelPage(int idxDel);
 		void CloseAllPage();
 		BOOL IsClosed() const ;
+		void Refresh();
+		CefString GetFinalURL(int idx);
+		int GetHitIndex() const;
+		void SetHitIndex(int idx);
 	public:
 
 		//virtual void SetInnerVisible(bool bVisible = true)
@@ -33,32 +37,15 @@ namespace DuiLib
 		//	__super::SetInnerVisible(bVisible);
 		//	::ShowWindow(hWebKitBrowserWnd_, bVisible);
 		//}
-
 	
-
-		//BOOL Attach(HWND hWndNew)
-		//{
-		//	if (!::IsWindow(hWndNew))
-		//	{
-		//		return FALSE;
-		//	}
-
-		//	hWebKitBrowserWnd_ = hWndNew;
-		//	return TRUE;
-		//}
-
-		//HWND Detach()
-		//{
-		//	HWND hWnd = hWebKitBrowserWnd_;
-		//	hWebKitBrowserWnd_ = NULL;
-		//	return hWnd;
-		//}
+	public:
 
 	protected:
 
 		HWND hWebKitBrowserWnd_;
 
 		std::vector<std::wstring> strURLs_;
+
 		vector<CefRefPtr<CCefClientHandler>>   clientHandlers_;
 		int nHitIndex_;
 

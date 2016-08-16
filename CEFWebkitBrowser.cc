@@ -13,10 +13,12 @@ CEFWebkitBrowserWnd* CEFWebkitBrowserWnd::pCEFWebkitBrowserWnd=NULL;
 
 CEFWebkitBrowserWnd::CEFWebkitBrowserWnd()
 {
-   // pWKEWebkitUI=NULL;
-    pURLEditUI=NULL;
+	pURLEditCtrl_=NULL;
+	pWebStateCtrl_ = NULL;
+	pWKEWebkitCtrl_ = NULL;
+
     pCEFWebkitBrowserWnd=this;
-	pWKEWebkitUI_ = NULL;
+	
 }
 
 CEFWebkitBrowserWnd::~CEFWebkitBrowserWnd()
@@ -29,7 +31,7 @@ CControlUI* CEFWebkitBrowserWnd::CreateControl( LPCTSTR pstrClassName )
 {
     if (_tcsicmp(pstrClassName, _T("CEFWebkitBrowser")) == 0)
     {
-        return  (pWKEWebkitUI_=new CCEFWebkitUI(GetSafeHwnd()));
+        return  (pWKEWebkitCtrl_=new CCEFWebkitUI(GetSafeHwnd()));
     }
 
     return NULL;
@@ -44,7 +46,7 @@ void CEFWebkitBrowserWnd::OnFinalMessage(HWND hWnd)
 
 LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	//::PostQuitMessage(0L);
+	::PostQuitMessage(0L);
 
 	return __super::OnDestroy(uMsg,wParam,lParam,bHandled);
 }
@@ -53,9 +55,9 @@ LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 
-	if (!pWKEWebkitUI_->IsClosed())
+	if (!pWKEWebkitCtrl_->IsClosed())
 	{
-		pWKEWebkitUI_->CloseAllPage();
+		pWKEWebkitCtrl_->CloseAllPage();
 		bHandled = TRUE;
 	}
 
@@ -67,8 +69,9 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 void CEFWebkitBrowserWnd::InitWindow()
 {
-
-    //pURLEditUI = dynamic_cast<CRichEditUI*>(m_PaintManager.FindControl(_T("ui_et_urlinput")));
+	pWebStateCtrl_ =dynamic_cast<CLabelUI*>(	FindControl(_T("ui_lbl_status")));
+	
+    pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(m_PaintManager.FindControl(_T("ui_et_urlinput")));
 
     //pWKEWebkitUI = dynamic_cast<CWKEWebkitUI*>(m_PaintManager.FindControl(_T("ui_wke_wkebrowser")));
     //if (pWKEWebkitUI)
@@ -114,21 +117,25 @@ void CEFWebkitBrowserWnd::Notify( TNotifyUI& msg )
     //需要关闭richedit的want return属性
     else if (msg.sType==DUI_MSGTYPE_RETURN)
     {
-        if (pURLEditUI==msg.pSender)
+        if (pURLEditCtrl_==msg.pSender)
         {
-            if (pURLEditUI&&pWKEWebkitUI_)
+            if (pURLEditCtrl_&&pWKEWebkitCtrl_)
             {
                 //pWKEWebkitUI->LoadURL(pURLEditUI->GetText().GetData());
             }
         }
     }
+	else if (msg.sType == _T("windowinit"))
+	{
+		OnInitComplate();
+	}
     __super::Notify(msg);
 }
 
 
 LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	int ss = 6;
+	TCHAR szBuf[256];
 
 	switch (uMsg)
 	{
@@ -137,8 +144,60 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 		PostQuitMessage(0L);
 		break;
 	case UM_WEBLOADPOPUP:
-		ss = 6;
+		
 		break;
+	case UM_WEBLOADEND:
+	{
+	
+	/*	int index = m_pTabLayoutUI->GetCurSel();
+		CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
+		if (pHor)
+		{
+			int iCount = m_pTabSwitchHor->GetCount();
+			for (int i = 0; i < iCount; i++)
+			{
+				COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
+				CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
+				if (pHaveHor == pHor)
+				{
+					if (m_cWebClient.at(index)->GetBrowser()->CanGoBack())
+					{
+						m_BackBtn->SetEnabled(true);
+					}
+					else
+					{
+						m_BackBtn->SetEnabled(false);
+					}
+					if (m_cWebClient.at(index)->GetBrowser()->CanGoForward())
+					{
+						m_ForwardBtn->SetEnabled(true);
+					}
+					else
+					{
+						m_ForwardBtn->SetEnabled(false);
+					}
+					m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
+					break;
+				}
+			}
+		}*/
+
+		
+		if (pURLEditCtrl_)
+		{
+			pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pWKEWebkitCtrl_->GetHitIndex()).c_str());
+		}
+
+		CefString* pStrComplateURL = (CefString*)lParam;
+
+		if (pStrComplateURL!=NULL)
+		{
+			StringCbPrintf(szBuf,sizeof(szBuf), _T("%s:加载完成"), pStrComplateURL->c_str());
+		}
+
+		pWebStateCtrl_->SetText(szBuf);
+	}
+	break;
 	default:
 		break;
 	}
@@ -146,4 +205,12 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
     bHandled=FALSE;
 
     return 0;
+}
+
+void CEFWebkitBrowserWnd::OnInitComplate()
+{
+	if (pWKEWebkitCtrl_)
+	{
+		pWKEWebkitCtrl_->NewPage(_T("www.baidu.com"));
+	}
 }

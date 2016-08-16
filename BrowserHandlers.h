@@ -55,7 +55,7 @@ public:
 
 public:
 	CefRefPtr<CefBrowser> browser_;
-	std::wstring strCurURL_;//加载当前页的url
+	CefString strCurURL_;//加载当前页的url
 	HWND hWnd_; //接收消息的句柄
 	CefString strTitle_; //网址标题
 	static int nBrowerReferenceCount_;
