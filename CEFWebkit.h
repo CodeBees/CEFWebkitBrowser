@@ -27,7 +27,7 @@ namespace DuiLib
 		void CloseAllPage();
 		BOOL IsClosed() const ;
 		void Refresh();
-		CefString GetFinalURL(int idx);
+		CefString GetFinalURL(size_t idx);
 		int GetHitIndex() const;
 		void SetHitIndex(int idx);
 	public:
@@ -46,7 +46,8 @@ namespace DuiLib
 
 		std::vector<std::wstring> strURLs_;
 
-		vector<CefRefPtr<CCefClientHandler>>   clientHandlers_;
+		//vector<CefRefPtr<CCefClientHandler>>   clientHandlers_;
+		CefRefPtr<CCefClientHandler>  clientHandler_;
 		int nHitIndex_;
 
 	};

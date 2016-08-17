@@ -23,7 +23,7 @@ CEFWebkitBrowserWnd::CEFWebkitBrowserWnd()
 
 CEFWebkitBrowserWnd::~CEFWebkitBrowserWnd()
 {
-	int a = 30;
+	
 }
 
 
@@ -44,12 +44,12 @@ void CEFWebkitBrowserWnd::OnFinalMessage(HWND hWnd)
 	__super::OnFinalMessage(hWnd);
 }
 
-LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	::PostQuitMessage(0L);
-
-	return __super::OnDestroy(uMsg,wParam,lParam,bHandled);
-}
+//LRESULT CEFWebkitBrowserWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+//{
+//	//::PostQuitMessage(0L);
+//
+//	return __super::OnDestroy(uMsg,wParam,lParam,bHandled);
+//}
 
 //截取WM_CLOSE消息
 LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -59,6 +59,7 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	{
 		pWKEWebkitCtrl_->CloseAllPage();
 		bHandled = TRUE;
+		return 0;
 	}
 
 	bHandled = FALSE;
@@ -70,26 +71,7 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 void CEFWebkitBrowserWnd::InitWindow()
 {
 	pWebStateCtrl_ =dynamic_cast<CLabelUI*>(	FindControl(_T("ui_lbl_status")));
-	
     pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(m_PaintManager.FindControl(_T("ui_et_urlinput")));
-
-    //pWKEWebkitUI = dynamic_cast<CWKEWebkitUI*>(m_PaintManager.FindControl(_T("ui_wke_wkebrowser")));
-    //if (pWKEWebkitUI)
-    //{
-
-    //    wkeClientHanler_.onTitleChanged = onTitleChangedLocal;
-    //    wkeClientHanler_.onURLChanged = onURLChangedLocal;
-
-    //    pWKEWebkitUI->SetClientHandler(&wkeClientHanler_);
-
-    //    jsBindFunction("jsInvokeCPlusPlus", jsInvokeCPlusPlus, 2);//这里绑定js函数，让js主动调用c++函数
-
-
-    //    pWKEWebkitUI->LoadFile(_T("htmlexample/index.html"));
-    //}
-
-
-
 }
 
 
@@ -141,7 +123,9 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 	{
 	case UM_CEFCOMPLETEELEASE:
 		bHandled = TRUE;
-		PostQuitMessage(0L);
+		//Sleep(2000);
+		//CefQuitMessageLoop();
+		//PostQuitMessage(0L);
 		break;
 	case UM_WEBLOADPOPUP:
 		
@@ -193,6 +177,7 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 		if (pStrComplateURL!=NULL)
 		{
 			StringCbPrintf(szBuf,sizeof(szBuf), _T("%s:加载完成"), pStrComplateURL->c_str());
+			delete pStrComplateURL;
 		}
 
 		pWebStateCtrl_->SetText(szBuf);

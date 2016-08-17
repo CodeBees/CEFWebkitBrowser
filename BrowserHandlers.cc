@@ -4,53 +4,10 @@
 #include <base/cef_bind.h>
 
 
+//TID_UI 线程是浏览器的主线程。如果应用程序在调用调用CefInitialize()时，传递CefSettings.multi_threaded_message_loop = false，这个线程也是应用程序的主线程。
+//TID_IO 线程主要负责处理IPC消息以及网络通信。
+//TID_FILE 线程负责与文件系统交互。
 
-
-int CCefClientHandler::nBrowerReferenceCount_ = -1;
-
-CCefClientHandler::CCefClientHandler() :hWnd_(NULL), browser_(NULL)
-{
-
-}
-
-CCefClientHandler::~CCefClientHandler() {
-
-}
-
-CefRefPtr<CefBrowser> CCefClientHandler::GetBrowser()
-{
-	return browser_;
-};
-
-
-// CefClient methods:
-CefRefPtr<CefDisplayHandler> CCefClientHandler::GetDisplayHandler()
-{
-	return this;
-}
-CefRefPtr<CefLifeSpanHandler> CCefClientHandler::GetLifeSpanHandler()
-{
-	return this;
-}
-CefRefPtr<CefLoadHandler> CCefClientHandler::GetLoadHandler()
-{
-	return this;
-}
-
-CefRefPtr<CefRequestHandler> CCefClientHandler::GetRequestHandler()
-{
-	return this;
-}
-
-
-
-
-//// 缓存一个指向browser的引用
-void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
-{
-	++nBrowerReferenceCount_;
-	browser_ = browser;
-}
 
 // 1.  User clicks the window close button which sends an OS close
 //     notification (e.g. WM_CLOSE on Windows, performClose: on OS-X and
@@ -76,61 +33,107 @@ void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 //     exist.
 ///
 
-//bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
-//{
-//
-//	// Allow the close. For windowed browsers this will result in the OS close
-//	// event being sent.
-//
-//
-//
-//	return false;
-//}
+
+
+CCefClientHandler::CCefClientHandler() :hWnd_(NULL), is_closing_(false)
+{
+}
+
+CCefClientHandler::~CCefClientHandler()
+{
+	int a = 30;
+}
+
+
+// CefClient methods:
+CefRefPtr<CefDisplayHandler> CCefClientHandler::GetDisplayHandler()
+{
+	return this;
+}
+CefRefPtr<CefLifeSpanHandler> CCefClientHandler::GetLifeSpanHandler()
+{
+	return this;
+}
+CefRefPtr<CefLoadHandler> CCefClientHandler::GetLoadHandler()
+{
+	return this;
+}
+
+CefRefPtr<CefRequestHandler> CCefClientHandler::GetRequestHandler()
+{
+	return this;
+}
+
+// 缓存一个指向browser的引用
+void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
+{
+	// Add to the list of existing browsers.
+	browser_list_.push_back(browser);
+
+}
 
 
 bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 {
-	//CEF_REQUIRE_UI_THREAD();
+	//TID_UI 线程是浏览器的主线程。
+	CEF_REQUIRE_UI_THREAD();
+	AutoLock lock_scope(this);
 
-	browser_ = NULL;
-	//browser_->Release();
+	if (browser_list_.size() == 1) {
+		// Set a flag to indicate that the window close should be allowed.
+		is_closing_ = true;
+	}
+
 	return false;
 }
 
 
 void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
+	CEF_REQUIRE_UI_THREAD();
 	
-	--nBrowerReferenceCount_;
+	AutoLock lock_scope(this);
 
-	if (nBrowerReferenceCount_ < 0)
+	// Remove from the list of existing browsers.
+	BrowserList::iterator bit = browser_list_.begin();
+	for (; bit != browser_list_.end(); ++bit)
 	{
-		//	CefQuitMessageLoop();
-		//::PostQuitMessage(0L);
-		//SendMessage(hWnd_, UM_CEFCOMPLETEELEASE, 0, 0);
+		if ((*bit)->IsSame(browser)) {
+			browser_list_.erase(bit);
+			break;
+		}
+	}
+
+	if (browser_list_.empty()) {
+		// All browser windows have closed. Quit the application message loop.
+		CefQuitMessageLoop();
+		//PostQuitMessage(0l);
 	}
 
 }
 
 void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
 {
+	CEF_REQUIRE_UI_THREAD();
 
-	strCurURL_ = browser->GetMainFrame()->GetURL();
-	::PostMessage(hWnd_, UM_WEBLOADSTART, NULL, (LPARAM)&strCurURL_);
+	CefString strCurURL = browser->GetMainFrame()->GetURL();
+	::PostMessage(hWnd_, UM_WEBLOADSTART, NULL, (LPARAM)&strCurURL);
 	return __super::OnLoadStart(browser, frame);
 }
 void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
-	strCurURL_ = browser->GetMainFrame()->GetURL();
-	::PostMessage(hWnd_, UM_WEBLOADEND, NULL, (LPARAM)&strCurURL_);
-	//strCurURL_.c_str();
+	CEF_REQUIRE_UI_THREAD();
+
+	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
+	::PostMessage(hWnd_, UM_WEBLOADEND, NULL, (LPARAM)strTmpURL);
+	
 }
 
 
 
 void CCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl)
 {
-	//CEF_REQUIRE_UI_THREAD();
+	CEF_REQUIRE_UI_THREAD();
 
 	// Don't display an error for downloaded files.
 	if (errorCode == ERR_ABORTED)
@@ -146,16 +149,12 @@ void CCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 }
 
 
-void CCefClientHandler::CloseHostBrowser(bool force_close)
-{
-	browser_->GetHost()->CloseBrowser(force_close);
-}
 
 
 
 void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title)
 {
-	//CEF_REQUIRE_UI_THREAD();
+	CEF_REQUIRE_UI_THREAD();
 	CefWindowHandle hwnd = browser->GetHost()->GetWindowHandle();
 	SetWindowText(hwnd, std::wstring(title).c_str());
 }
@@ -165,14 +164,35 @@ void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefSt
 bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& target_url, const CefString& target_frame_name, CefLifeSpanHandler::WindowOpenDisposition target_disposition,
 	bool user_gesture, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access)
 {
-	strCurURL_ = target_url;
-	::PostMessage(hWnd_, UM_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL_);
-	return true;
 
+	CefString strCurURL = target_url;
+	::PostMessage(hWnd_, UM_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL);
+	return true;
 
 }
 
 
-void CloseBrowser(bool force_close)
+void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool force_close)
 {
+	browser->GetHost()->CloseBrowser(force_close);
+}
+
+
+void CCefClientHandler::CloseAllBrowsers(bool force_close)
+{
+	if (!CefCurrentlyOn(TID_UI))
+	{
+		// Execute on the UI thread.
+		CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseAllBrowsers, this, force_close));
+		return;
+	}
+
+	if (browser_list_.empty())
+		return;
+
+	BrowserList::const_iterator it = browser_list_.begin();
+	for (; it != browser_list_.end(); ++it)
+	{
+		(*it)->GetHost()->CloseBrowser(force_close);
+	}
 }

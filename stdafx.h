@@ -22,6 +22,7 @@
 #include <wrapper/cef_closure_task.h>
 #include <cef_app.h>
 #include <cef_base.h>
+#include <base/cef_lock.h>
 #include <wrapper/cef_helpers.h>
 
 

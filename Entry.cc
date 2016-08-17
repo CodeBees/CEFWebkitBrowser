@@ -45,7 +45,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Specify CEF global settings here.
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
-	settings.single_process = false;                //使用多进程模式
+	settings.single_process = true;                //使用多进程模式
 	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
 	settings.command_line_args_disabled = true;
 	//CefString(&settings.locale).FromASCII("zh-CN");
@@ -56,7 +56,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 #endif
 
 	//multi_threaded_message_loop=true 这样设置的目的是使cef的browser ui线程和程序的线程分离，使用duilib的消息循环函数
-	settings.multi_threaded_message_loop = true;
+	settings.multi_threaded_message_loop = false;
 
 	// SimpleApp implements application-level callbacks for the browser process.
 	// It will create the first browser instance in OnContextInitialized() after
@@ -64,11 +64,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	CefRefPtr<CCefClientApp> app(NULL);
 
 	// Initialize CEF.
-	CefInitialize(main_args, settings, app.get(), sandbox_info);
+	CefInitialize(main_args, settings, nullptr, sandbox_info);
 
 
 	CEFWebkitBrowserWnd pFrame;
-	pFrame.Create(NULL, _T("浏览器"), UI_WNDSTYLE_FRAME | WS_CLIPCHILDREN, 0);
+	pFrame.Create(NULL, _T("浏览器"), UI_WNDSTYLE_FRAME | WS_CLIPCHILDREN, WS_EX_ACCEPTFILES);
 	pFrame.CenterWindow();
 
 	//	绘制阴影
@@ -91,8 +91,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	}
 	else
 	{
-		DuiLib::CPaintManagerUI::MessageLoop();
+		CPaintManagerUI::MessageLoop();
 	}
+
 
 	CefShutdown();
 

@@ -7,6 +7,8 @@ namespace DuiLib
 	CCEFWebkitUI::CCEFWebkitUI(HWND hParent) :nHitIndex_(0)
 	{
 		hWebKitBrowserWnd_ = hParent;
+		clientHandler_ = new CCefClientHandler();
+		clientHandler_->hWnd_ = hWebKitBrowserWnd_;
 	}
 
 	CCEFWebkitUI::~CCEFWebkitUI()
@@ -55,51 +57,55 @@ namespace DuiLib
 	{
 		__super::SetPos(rc);
 
-		CefRefPtr<CCefClientHandler> pClientHandler = NULL;
 		CefRefPtr<CefBrowser> pBrowser = NULL;
 		CefRefPtr<CefBrowserHost>  pBrowerHost = NULL;
 		CefWindowHandle hwnd = NULL;
 
-
-		for (UINT idx = 0; idx < clientHandlers_.size(); idx++)
+		if (clientHandler_!=NULL)
 		{
 
-			pClientHandler = clientHandlers_.at(idx);
-
-			if (pClientHandler)
+			for (UINT idx = 0; idx <clientHandler_.get()->browser_list_.size(); idx++)
 			{
-				pBrowser = pClientHandler->GetBrowser();
-				if (pBrowser)
-				{
-					pBrowerHost = pBrowser->GetHost();
 
-					if (pBrowerHost)
+				pBrowser = clientHandler_.get()->browser_list_.at(idx);
+
+					if (pBrowser)
 					{
+						pBrowerHost = pBrowser->GetHost();
 
-						hwnd = pBrowerHost->GetWindowHandle();
-						if ((hwnd != NULL) && (IsWindow(hwnd)))
+						if (pBrowerHost)
 						{
 
-							if (idx != nHitIndex_)
+							hwnd = pBrowerHost->GetWindowHandle();
+							if ((hwnd != NULL) && (IsWindow(hwnd)))
 							{
-								//MoveWindow(hwnd, 0, 0, 0, 0, false);
-								ShowWindow(hwnd, SW_HIDE);
-							}
-							else
-							{
-								ShowWindow(hwnd, SW_SHOW);
-								MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, true);
+
+								if (idx != nHitIndex_)
+								{
+									//MoveWindow(hwnd, 0, 0, 0, 0, false);
+									ShowWindow(hwnd, SW_HIDE);
+								}
+								else
+								{
+									ShowWindow(hwnd, SW_SHOW);
+									MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, true);
+								}
+
 							}
 
 						}
 
 					}
 
-				}
+				
 
 			}
 
+
 		}
+
+
+	
 
 	}
 
@@ -150,19 +156,16 @@ namespace DuiLib
 	{
 		strURLs_.push_back(Url);
 
-		CefRefPtr<CCefClientHandler>client(new CCefClientHandler());
-		client->hWnd_ = hWebKitBrowserWnd_;
-		clientHandlers_.push_back(client);
-
 		CefWindowInfo info;
 
-		RECT rectnew = { 0,200,800,600 };//= GetPos();
+		//RECT rectnew = { 0,200,800,600 };//= GetPos();
+		RECT rectnew = GetPos();
 
 		info.SetAsChild(hWebKitBrowserWnd_, rectnew);
 
 		CefBrowserSettings browserSettings;
 
-		CefBrowserHost::CreateBrowser(info, static_cast<CefRefPtr<CefClient>>(client), Url.c_str(), browserSettings, NULL);
+		CefBrowserHost::CreateBrowser(info, static_cast<CefRefPtr<CefClient>>(clientHandler_), Url.c_str(), browserSettings, NULL);
 		//for (UINT i = 0; i < clientHandlers_.size(); i++)
 		//{
 		//	if (clientHandlers_.at(i)->GetBrowser() && !clientHandlers_.at(i)->GetBrowser()->GetMainFrame()->GetURL().empty())
@@ -181,7 +184,7 @@ namespace DuiLib
 		//	}
 		//}
 
-		nHitIndex_ = clientHandlers_.size()-1;
+	//	nHitIndex_ = clientHandlers_.size()-1;
 
 		NeedParentUpdate();
 	}
@@ -191,28 +194,29 @@ namespace DuiLib
 	void CCEFWebkitUI::DelPage(int idxDel)
 	{
 		int t_Index = 0;
-		vector<CefRefPtr<CCefClientHandler>>::iterator cWebClientit = clientHandlers_.begin();
+
+
+
+		vector<CefRefPtr<CefBrowser>>::iterator cWebBrowerit = clientHandler_->browser_list_.begin();
+
 		if (strURLs_.size() > 1)
 		{
-
 
 			for (vector<wstring>::iterator it = strURLs_.begin(); it != strURLs_.end();)   //for循环中不要it++
 			{
 				if (t_Index == idxDel)
 				{
 
-					::MoveWindow(cWebClientit->get()->GetBrowser()->GetHost()->GetWindowHandle(), 0, 0, 0, 0, true);
-					cWebClientit->get()->CloseHostBrowser(true);
-					clientHandlers_.erase(cWebClientit++);
+					::MoveWindow(cWebBrowerit->get()->GetHost()->GetWindowHandle(), 0, 0, 0, 0, true);
+					clientHandler_->CloseHostBrowser(cWebBrowerit->get(),true);
+					//clientHandlers_.erase(cWebBrowerit++);
 					strURLs_.erase(it++);
-					//MaxMinCefWindow(OFFSETX, OFFSETY);
-					//::CoUninitialize();
 					break;
 				}
 				else
 				{
 					it++;
-					cWebClientit++;
+					cWebBrowerit++;
 				}
 
 				t_Index++;
@@ -221,7 +225,7 @@ namespace DuiLib
 		else
 		{
 			strURLs_.at(0) = _T("about:blank");
-			clientHandlers_.at(0)->GetBrowser()->GetMainFrame()->LoadURL(strURLs_.at(0).c_str());
+			clientHandler_->browser_list_.at(0)->GetMainFrame()->LoadURL(strURLs_.at(0).c_str());
 			/*	CEditUI* pEdit = (CEditUI*)m_PaintManager.FindControl(_T("url"));
 				if (pEdit)
 				{
@@ -232,27 +236,13 @@ namespace DuiLib
 
 	void CCEFWebkitUI::CloseAllPage()
 	{
-
-		if (clientHandlers_.empty())
-		{
-			return;
-		}
-
-		vector<CefRefPtr<CCefClientHandler>>::iterator cWebClientit = clientHandlers_.begin();
-
-		for (; cWebClientit != clientHandlers_.end(); ++cWebClientit)
-		{
-			cWebClientit->get()->CloseHostBrowser(false);
-		}
-
-		clientHandlers_.clear();
-
+		clientHandler_->CloseAllBrowsers(true);
 	}
 
 
 	BOOL CCEFWebkitUI::IsClosed() const
 	{
-		if (clientHandlers_.empty())
+		if (clientHandler_->IsClosing())
 		{
 			return TRUE;
 		}
@@ -264,24 +254,24 @@ namespace DuiLib
 
 	void CCEFWebkitUI::Refresh()
 	{
-		if (clientHandlers_.empty())
+		if (clientHandler_->browser_list_.empty())
 		{
 			return;
 		}
 
-		clientHandlers_.at(nHitIndex_)->GetBrowser()->Reload();
+		clientHandler_->browser_list_.at(nHitIndex_)->Reload();
 
 	}
 
-	CefString CCEFWebkitUI::GetFinalURL(int idx)
+	CefString CCEFWebkitUI::GetFinalURL(size_t idx)
 	{
-		if ((idx<0)||(idx>clientHandlers_.size()))
+		if ((idx<0)||(idx>clientHandler_->browser_list_.size()))
 		{
 			return "";
 		}
 
+		return	clientHandler_->browser_list_.at(idx)->GetMainFrame()->GetURL();
 
-		return	clientHandlers_.at(idx).get()->strCurURL_;
 	}
 
 	int CCEFWebkitUI::GetHitIndex() const
