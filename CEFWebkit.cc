@@ -236,7 +236,7 @@ namespace DuiLib
 
 	void CCEFWebkitUI::CloseAllPage()
 	{
-		clientHandler_->CloseAllBrowsers(true);
+		clientHandler_->CloseAllBrowsers(false);
 	}
 
 

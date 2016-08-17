@@ -23,6 +23,7 @@ public:
     virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
 	void OnInitComplate();
+	void OnTitleChanged(const CefString str);
 public:
     static CEFWebkitBrowserWnd* pCEFWebkitBrowserWnd;
     

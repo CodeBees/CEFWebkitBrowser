@@ -91,14 +91,15 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
 	CEF_REQUIRE_UI_THREAD();
-	
+
 	AutoLock lock_scope(this);
 
 	// Remove from the list of existing browsers.
 	BrowserList::iterator bit = browser_list_.begin();
 	for (; bit != browser_list_.end(); ++bit)
 	{
-		if ((*bit)->IsSame(browser)) {
+		if ((*bit)->IsSame(browser)) 
+		{
 			browser_list_.erase(bit);
 			break;
 		}
@@ -106,6 +107,7 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
 	if (browser_list_.empty()) {
 		// All browser windows have closed. Quit the application message loop.
+	
 		CefQuitMessageLoop();
 		//PostQuitMessage(0l);
 	}
@@ -116,17 +118,18 @@ void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 {
 	CEF_REQUIRE_UI_THREAD();
 
-	CefString strCurURL = browser->GetMainFrame()->GetURL();
-	::PostMessage(hWnd_, UM_WEBLOADSTART, NULL, (LPARAM)&strCurURL);
-	return __super::OnLoadStart(browser, frame);
+	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
+	::PostMessage(hWnd_, UM_CEF_WEBLOADSTART, NULL, (LPARAM)strTmpURL);
+	
+	//return __super::OnLoadStart(browser, frame);
 }
 void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
 	CEF_REQUIRE_UI_THREAD();
 
 	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
-	::PostMessage(hWnd_, UM_WEBLOADEND, NULL, (LPARAM)strTmpURL);
-	
+	::PostMessage(hWnd_, UM_CEF_WEBLOADEND, NULL, (LPARAM)strTmpURL);
+
 }
 
 
@@ -155,8 +158,12 @@ void CCefClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title)
 {
 	CEF_REQUIRE_UI_THREAD();
-	CefWindowHandle hwnd = browser->GetHost()->GetWindowHandle();
-	SetWindowText(hwnd, std::wstring(title).c_str());
+
+	CefString* strTitle = new CefString(title); ;
+	::PostMessage(hWnd_, UM_CEF_WEBTITLECHANGE, NULL, (LPARAM)strTitle);
+
+	//CefWindowHandle hwnd = browser->GetHost()->GetWindowHandle();
+	//SetWindowText(hwnd, std::wstring(title).c_str());
 }
 
 
@@ -166,7 +173,7 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 {
 
 	CefString strCurURL = target_url;
-	::PostMessage(hWnd_, UM_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL);
+	::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL);
 	return true;
 
 }

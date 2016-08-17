@@ -59,12 +59,13 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	{
 		pWKEWebkitCtrl_->CloseAllPage();
 		bHandled = TRUE;
+		// // Cancel the close.
 		return 0;
 	}
 
 	bHandled = FALSE;
 
-	return 0;
+	return -1;
 }
 
 
@@ -121,16 +122,16 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 
 	switch (uMsg)
 	{
-	case UM_CEFCOMPLETEELEASE:
+	case UM_CEF_COMPLETEELEASE:
 		bHandled = TRUE;
 		//Sleep(2000);
 		//CefQuitMessageLoop();
 		//PostQuitMessage(0L);
 		break;
-	case UM_WEBLOADPOPUP:
+	case UM_CEF_WEBLOADPOPUP:
 		
 		break;
-	case UM_WEBLOADEND:
+	case UM_CEF_WEBLOADEND:
 	{
 	
 	/*	int index = m_pTabLayoutUI->GetCurSel();
@@ -172,8 +173,8 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 			pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pWKEWebkitCtrl_->GetHitIndex()).c_str());
 		}
 
+		memset(szBuf, '\0', sizeof(szBuf));
 		CefString* pStrComplateURL = (CefString*)lParam;
-
 		if (pStrComplateURL!=NULL)
 		{
 			StringCbPrintf(szBuf,sizeof(szBuf), _T("%s:加载完成"), pStrComplateURL->c_str());
@@ -183,6 +184,47 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 		pWebStateCtrl_->SetText(szBuf);
 	}
 	break;
+
+	case UM_CEF_WEBLOADSTART:
+	{
+		memset(szBuf, '\0', sizeof(szBuf));
+		CefString* pStrComplateURL = (CefString*)lParam;
+		if (pStrComplateURL != NULL)
+		{
+			StringCbPrintf(szBuf, sizeof(szBuf), _T("正在加载:%s"), pStrComplateURL->c_str());
+			delete pStrComplateURL;
+		}
+
+		pWebStateCtrl_->SetText(szBuf);
+
+		//int index = m_pTabLayoutUI->GetCurSel();
+		/*	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
+		if (pHor)
+		{
+			int iCount = m_pTabSwitchHor->GetCount();
+			for (int i = 0; i < iCount; i++)
+			{
+				COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
+				CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
+				if (pHaveHor == pHor)
+				{
+					m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
+					break;
+				}
+			}
+		}*/
+	}
+	break;
+	case UM_CEF_WEBTITLECHANGE:
+	{
+		CefString* pStrComplateURL = (CefString*)lParam;
+		if (pStrComplateURL != NULL)
+		{
+			OnTitleChanged(*pStrComplateURL);
+			delete pStrComplateURL;
+		}
+	}
+		break;
 	default:
 		break;
 	}
@@ -198,4 +240,40 @@ void CEFWebkitBrowserWnd::OnInitComplate()
 	{
 		pWKEWebkitCtrl_->NewPage(_T("www.baidu.com"));
 	}
+}
+
+
+//标题改变
+void CEFWebkitBrowserWnd::OnTitleChanged(const CefString str)
+{
+
+	//int index = m_pTabLayoutUI->GetCurSel();
+	//CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
+	//if (pHor)
+	//{
+	//	int iCount = m_pTabSwitchHor->GetCount();
+	//	for (int i = 0; i < iCount; i++)
+	//	{
+	//		COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
+	//		CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
+	//		if (pHaveHor == pHor)
+	//		{
+	//			if (str.length() > 8)
+	//			{
+	//				wchar_t strtilte[100] = { NULL };
+	//				wcsncpy(strtilte, str.c_str(), 6);
+	//				wcsncat(strtilte, _T("..."), 3);
+	//				pOpt->SetText(strtilte);
+	//			}
+	//			else
+	//			{
+	//				pOpt->SetText(str.c_str());
+	//			}
+	//			pOpt->SetToolTip(str.c_str());
+	//			break;
+	//		}
+	//	}
+	//}
+
+	return;
 }
