@@ -45,9 +45,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Specify CEF global settings here.
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
-	settings.single_process = true;                //使用多进程模式
-	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
-	settings.command_line_args_disabled = true;
+//	settings.single_process = true;                //使用多进程模式
+//	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
+//	settings.command_line_args_disabled = true;
 	//CefString(&settings.locale).FromASCII("zh-CN");
 
 
@@ -61,12 +61,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// SimpleApp implements application-level callbacks for the browser process.
 	// It will create the first browser instance in OnContextInitialized() after
 	// CEF has initialized.
-	CefRefPtr<CCefClientApp> app(NULL);
+	CefRefPtr<CCefClientApp> app(new CCefClientApp);
 
 	// Initialize CEF.
-	CefInitialize(main_args, settings, nullptr, sandbox_info);
+	CefInitialize(main_args, settings, app, sandbox_info);
 
-
+	
 	CEFWebkitBrowserWnd pFrame;
 	pFrame.Create(NULL, _T("浏览器"), UI_WNDSTYLE_FRAME | WS_CLIPCHILDREN, WS_EX_ACCEPTFILES);
 	pFrame.CenterWindow();
@@ -87,6 +87,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		//Run the CEF message loop. This function will block until the application
 		//recieves a WM_QUIT message.
 		CefRunMessageLoop();
+		//CefDoMessageLoopWork();
 
 	}
 	else

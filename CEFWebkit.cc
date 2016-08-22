@@ -150,9 +150,9 @@ namespace DuiLib
 		}
 	}
 
-
+	
 	//ÐÂÔöÒ³Ç©
-	void CCEFWebkitUI::NewPage(std::wstring Url)
+	void CCEFWebkitUI::NewPage(CefString Url)
 	{
 		strURLs_.push_back(Url);
 
@@ -184,7 +184,7 @@ namespace DuiLib
 		//	}
 		//}
 
-	//	nHitIndex_ = clientHandlers_.size()-1;
+		nHitIndex_ = clientHandler_->browser_list_.size();
 
 		NeedParentUpdate();
 	}
@@ -236,7 +236,7 @@ namespace DuiLib
 
 	void CCEFWebkitUI::CloseAllPage()
 	{
-		clientHandler_->CloseAllBrowsers(false);
+		clientHandler_->CloseAllBrowsers(true);
 	}
 
 

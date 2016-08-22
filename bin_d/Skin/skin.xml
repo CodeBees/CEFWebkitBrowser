@@ -15,8 +15,7 @@
             </HorizontalLayout>
         </HorizontalLayout>
         <HorizontalLayout name="ui_hl_urltabs" height="30">
-            <Option name="ui_opt_page0" text="www.baidu.com" width="100" height="30" textpadding="0,2,0,0" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal.png" hotimage="tabbar_hover.png" pushedimage="tabbar_pushed.png" group="demo_list_header" selected="true" selectedimage="tabbar_pushed.png" selectedtextcolor="#FF000000" />
-            <Option name="ui_btn_newpage" text=" + " tooltip="添加新页签" width="30" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal1.png" hotimage="tabbar_hover1.png" pushedimage="tabbar_pushed1.png" group="demo_list_header" selectedimage="tabbar_pushed1.png" selectedtextcolor="#FF000000" />
+            <Option name="ui_btn_newpage" text=" + " tooltip="添加新页签" width="30" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal1.png" hotimage="tabbar_hover1.png" pushedimage="tabbar_pushed1.png" group="ui_grp_webtab" selectedimage="tabbar_pushed1.png" selectedtextcolor="#FF000000" />
         </HorizontalLayout>
         <VerticalLayout height="60" bkimage="Main-Tab.png" bkcolor="#FFFFFBF0" childpadding="2">
             <Control />
@@ -33,8 +32,8 @@
             </HorizontalLayout>
             <Control />
         </VerticalLayout>
-        <HorizontalLayout bkcolor="#FFFF0F00">
-            <CEFWebkitBrowser bkcolor="FFFF0000" height="0" name="CEFWebkitBrowserUI1" size="0, 0" width="0" />
+        <HorizontalLayout>
+            <CEFWebkitBrowser height="0" name="CEFWebkitBrowserUI1" size="0, 0" width="0" />
         </HorizontalLayout>
         <HorizontalLayout height="20">
             <Label name="ui_lbl_status" bkcolor="#FFA0A0A4" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="left" valign="center" />

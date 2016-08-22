@@ -22,7 +22,7 @@ namespace DuiLib
 		virtual void SetPos(RECT rc);
 
 	public:
-		void NewPage(std::wstring Url);
+		void NewPage(CefString Url);
 		void DelPage(int idxDel);
 		void CloseAllPage();
 		BOOL IsClosed() const ;

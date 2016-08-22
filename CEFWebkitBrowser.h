@@ -16,14 +16,15 @@ public:
     virtual CDuiString GetSkinFolder()              { return _T("Skin"); }
     virtual CControlUI* CreateControl(LPCTSTR pstrClass);
 	virtual void OnFinalMessage(HWND hWnd);
-	//virtual LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	virtual LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	virtual	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
     virtual void InitWindow();
     virtual void Notify(TNotifyUI& msg);
     virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
 	void OnInitComplate();
-	void OnTitleChanged(const CefString str);
+	void OnTitleChanged(int nID,const CefString str);
+	void OnAfterCreate(int nID);
 public:
     static CEFWebkitBrowserWnd* pCEFWebkitBrowserWnd;
     
@@ -33,5 +34,19 @@ public:
 private:
     CRichEditUI*        pURLEditCtrl_;
 	CLabelUI*			pWebStateCtrl_;
+	CHorizontalLayoutUI* pWebTabContainer_;
+
+	class COptionTag
+	{
+	public:
+		int nID_;
+		COptionTag::COptionTag(int nID) :nID_(nID)
+		{
+
+		};
+	};
+
+	
+
 
 };

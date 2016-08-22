@@ -69,6 +69,9 @@ void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
 	// Add to the list of existing browsers.
 	browser_list_.push_back(browser);
+	int nID = browser->GetIdentifier();
+
+	::PostMessage(hWnd_, UM_CEF_AFTERCREATED, nID, 0);
 
 }
 
@@ -119,7 +122,8 @@ void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 	CEF_REQUIRE_UI_THREAD();
 
 	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
-	::PostMessage(hWnd_, UM_CEF_WEBLOADSTART, NULL, (LPARAM)strTmpURL);
+	int nID = browser->GetIdentifier();
+	::PostMessage(hWnd_, UM_CEF_WEBLOADSTART, nID, (LPARAM)strTmpURL);
 	
 	//return __super::OnLoadStart(browser, frame);
 }
@@ -128,7 +132,8 @@ void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFr
 	CEF_REQUIRE_UI_THREAD();
 
 	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
-	::PostMessage(hWnd_, UM_CEF_WEBLOADEND, NULL, (LPARAM)strTmpURL);
+	int nID = browser->GetIdentifier();
+	::PostMessage(hWnd_, UM_CEF_WEBLOADEND, nID, (LPARAM)strTmpURL);
 
 }
 
@@ -159,11 +164,11 @@ void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefSt
 {
 	CEF_REQUIRE_UI_THREAD();
 
-	CefString* strTitle = new CefString(title); ;
-	::PostMessage(hWnd_, UM_CEF_WEBTITLECHANGE, NULL, (LPARAM)strTitle);
+	// globally unique identifier for this browser
+	int nID=browser->GetIdentifier();
 
-	//CefWindowHandle hwnd = browser->GetHost()->GetWindowHandle();
-	//SetWindowText(hwnd, std::wstring(title).c_str());
+	CefString* strTitle = new CefString(title);
+	::PostMessage(hWnd_, UM_CEF_WEBTITLECHANGE, nID, (LPARAM)strTitle);
 }
 
 
@@ -172,8 +177,9 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 	bool user_gesture, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access)
 {
 
-	CefString strCurURL = target_url;
-	::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, NULL, (LPARAM)&strCurURL);
+	//消息处理后记得delete分配的字符串资源
+	CefString* strTargetURL = new CefString(target_url);
+	::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);
 	return true;
 
 }
@@ -201,5 +207,6 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 	for (; it != browser_list_.end(); ++it)
 	{
 		(*it)->GetHost()->CloseBrowser(force_close);
+		break;
 	}
 }
