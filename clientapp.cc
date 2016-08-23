@@ -16,7 +16,10 @@ void CCefClientApp::OnBeforeCommandLineProcessing(const CefString & process_type
 {
 	//加载flash插件
 	command_line->AppendSwitchWithValue("--ppapi-flash-path", "ppflash/18_0_0_209/pepflashplayer32_18_0_0_209.dll");
+	//manifest.json中的version
 	command_line->AppendSwitchWithValue("--ppapi-flash-version", "18.0.0.209");
+
+	
 }
 
 void CCefClientApp::OnContextInitialized()

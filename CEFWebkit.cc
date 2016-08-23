@@ -253,6 +253,9 @@ namespace DuiLib
 				it->get()->GetMainFrame()->LoadURL(strURL);
 			}
 		}
+
+		ReFresh(nWebBrowserID);
+
 	}
 
 	CefString CCEFWebkitUI::GetFinalURL(int nWebBrowserID)

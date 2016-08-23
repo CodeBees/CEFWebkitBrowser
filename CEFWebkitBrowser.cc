@@ -86,32 +86,7 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 			{
 				pWKEWebkitCtrl_->DelPage(pTag->nID_);
 
-				int nIdx = pWebTabContainer_->GetItemIndex(pOpt);
 
-
-				if (nIdx != -1)
-				{
-					if (nIdx == 0)
-					{
-						nIdx = 1;
-					}
-					else
-					{
-						--nIdx;
-					}
-
-					COptionUI* pShilfOption = dynamic_cast<COptionUI*>(pWebTabContainer_->GetItemAt(nIdx));
-					COptionTag* pShilfTag = (COptionTag*)pShilfOption->GetTag();
-
-
-					if ((pShilfOption) && (pShilfTag != NULL))
-					{
-						pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
-						pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
-						pShilfOption->Selected(true);
-					}
-
-				}
 
 
 			}
@@ -169,7 +144,8 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 		{
 			if (pWKEWebkitCtrl_)
 			{
-				pWKEWebkitCtrl_->NewPage(_T("about:black"));
+			//	pWKEWebkitCtrl_->NewPage(_T("about:black"));
+				pWKEWebkitCtrl_->NewPage(_T("about:blank"));
 			}
 		}
 
@@ -354,7 +330,8 @@ void CEFWebkitBrowserWnd::OnAfterCreate(int nWebBrowserID)
 
 void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 {
-
+	TCHAR strDebugMsg[128];
+	
 	int nCountWebtab = pWebTabContainer_->GetCount();
 
 	for (int idx = 0; idx < nCountWebtab; idx++)
@@ -368,11 +345,44 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 
 		if ((pTag != NULL) && (pTag->nID_ == nBrowserID))
 		{
+			
+			int nSize = pWebTabContainer_->GetCount();
+
+			int nIdx = pWebTabContainer_->GetItemIndex(pOpt);
+			
 			pWebTabContainer_->Remove(pOpt);
+
+			if (nIdx != -1)
+			{
+
+				if (nIdx == (nSize - 2))
+				{
+					--nIdx;
+				}
+
+				COptionUI* pShilfOption = dynamic_cast<COptionUI*>(pWebTabContainer_->GetItemAt(nIdx));
+				COptionTag* pShilfTag = (COptionTag*)pShilfOption->GetTag();
+
+
+				if ((pShilfOption) && (pShilfTag != NULL))
+				{
+					pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
+					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
+					pShilfOption->Selected(true);
+				}
+
+
+
+			}
+			
+
+
 			break;
 		}
 	}
 
+	StringCbPrintf(strDebugMsg, sizeof(strDebugMsg), _T("delete id=%d\n"), nBrowserID);
+	OutputDebugString(strDebugMsg);
 
 }
 

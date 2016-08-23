@@ -236,7 +236,7 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 	for (; it != browser_list_.end(); ++it)
 	{
 		(*it)->GetHost()->CloseBrowser(force_close);
-		break;
+		
 	}
 
 	browser_list_.clear();

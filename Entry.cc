@@ -100,7 +100,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	CefShutdown();
 
 	//退出程序并释放COM库
-//	::CoUninitialize();
+	::CoUninitialize();
 
 	return 0;
 }

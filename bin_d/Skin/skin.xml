@@ -5,7 +5,7 @@
     <VerticalLayout name="framework" bkcolor="#FFFFFBF0">
         <HorizontalLayout name="title" height="27" bkcolor="#FF808080">
             <VerticalLayout inset="10,4,0,0">
-                <Label text="WKE Browser" width="478" height="18" textcolor="#00FFFFFF" disabledtextcolor="#FFA7A6AA" align="center" valign="center" />
+                <Label text="CEF Browser" width="478" height="18" textcolor="#00FFFFFF" disabledtextcolor="#FFA7A6AA" align="center" valign="center" />
             </VerticalLayout>
             <HorizontalLayout width="100" height="20">
                 <Button name="minbtn" width="32" height="19" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;title_min.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;0,0,32,20&apos;" hotimage="file=&apos;title_min.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;32,0,64,20&apos;" pushedimage="file=&apos;title_min.png&apos; dest=&apos;0,0,32,20&apos; source=&apos;64,0,96,20&apos;" />

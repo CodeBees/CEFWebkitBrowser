@@ -3,7 +3,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommand>$(solutionDir)bin_d\$(TargetName)_d$(TargetExt)</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>--ppapi-flash-path=ppflash/18_0_0_209/pepflashplayer32_18_0_0_209.dll --ppapi-flash-version=18.0.0.209</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>$(solutionDir)bin_d</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
