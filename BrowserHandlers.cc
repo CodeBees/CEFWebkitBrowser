@@ -69,6 +69,7 @@ void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
 	// Add to the list of existing browsers.
 	browser_list_.push_back(browser);
+
 	int nID = browser->GetIdentifier();
 
 	::PostMessage(hWnd_, UM_CEF_AFTERCREATED, nID, 0);
@@ -82,7 +83,7 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 	CEF_REQUIRE_UI_THREAD();
 	AutoLock lock_scope(this);
 
-	if (browser_list_.size() == 1) {
+	if (browser_list_.size() == 0) {
 		// Set a flag to indicate that the window close should be allowed.
 		is_closing_ = true;
 	}
@@ -95,25 +96,40 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
 	CEF_REQUIRE_UI_THREAD();
 
-	AutoLock lock_scope(this);
+	lock_.Acquire();
+
+	BOOL bNeedRemove = FALSE;
+
+//	AutoLock lock_scope(this);
 
 	// Remove from the list of existing browsers.
 	BrowserList::iterator bit = browser_list_.begin();
-	for (; bit != browser_list_.end(); ++bit)
+	for (; bit != browser_list_.end(); bit++)
 	{
-		if ((*bit)->IsSame(browser)) 
+		if ((*bit)->IsSame(browser))
 		{
-			browser_list_.erase(bit);
 			break;
 		}
 	}
 
-	if (browser_list_.empty()) {
+	if (bNeedRemove)
+	{
+		browser_list_.erase(bit);
+	}
+
+
+	browser = NULL;
+
+	if (browser_list_.empty()) 
+	{
 		// All browser windows have closed. Quit the application message loop.
 	
-		CefQuitMessageLoop();
+		//CefQuitMessageLoop();
 		//PostQuitMessage(0l);
 	}
+
+	lock_.Release();
+
 
 }
 
@@ -187,6 +203,19 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool force_close)
 {
+
+	if (!CefCurrentlyOn(TID_UI))
+	{
+		// Execute on the UI thread.
+		CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseHostBrowser, this,browser, force_close));
+		return;
+	}
+
+
+	int nID = browser->GetIdentifier();
+
+	::PostMessage(hWnd_, UM_CEF_BROWSERCLOSE, nID, 0);
+
 	browser->GetHost()->CloseBrowser(force_close);
 }
 
@@ -209,4 +238,13 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 		(*it)->GetHost()->CloseBrowser(force_close);
 		break;
 	}
+
+	browser_list_.clear();
+
+}
+
+
+bool CCefClientHandler::IsClosing() const
+{ 
+	return is_closing_; 
 }

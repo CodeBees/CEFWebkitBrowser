@@ -43,7 +43,7 @@ public:
 	// Request that all existing browser windows close.
 	void CloseAllBrowsers(bool force_close);
 
-	bool IsClosing() const { return is_closing_; }
+	bool IsClosing() const;
 
 public:
 	//CefRefPtr<CefBrowser> browser_;

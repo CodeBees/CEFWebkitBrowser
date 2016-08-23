@@ -46,9 +46,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
 //	settings.single_process = true;                //使用多进程模式
-//	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
+	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
 //	settings.command_line_args_disabled = true;
-	//CefString(&settings.locale).FromASCII("zh-CN");
+//	CefString(&settings.locale).FromASCII("zh-CN");
 
 
 #if !defined(CEF_USE_SANDBOX)
@@ -56,7 +56,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 #endif
 
 	//multi_threaded_message_loop=true 这样设置的目的是使cef的browser ui线程和程序的线程分离，使用duilib的消息循环函数
-	settings.multi_threaded_message_loop = false;
+	settings.multi_threaded_message_loop = true;
 
 	// SimpleApp implements application-level callbacks for the browser process.
 	// It will create the first browser instance in OnContextInitialized() after

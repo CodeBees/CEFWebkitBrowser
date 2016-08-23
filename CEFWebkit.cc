@@ -33,24 +33,24 @@ namespace DuiLib
 	void CCEFWebkitUI::DoInit()
 	{
 
-	/*	CefRefPtr<CCefClientHandler>client(new CCefClientHandler());
-		client->hWnd_ = hWebKitBrowserWnd_;
+		/*	CefRefPtr<CCefClientHandler>client(new CCefClientHandler());
+			client->hWnd_ = hWebKitBrowserWnd_;
 
-		clientHandlers_.push_back(client);
-		CefWindowInfo info;
-		RECT rectnew = { 100,100,800,600 };
+			clientHandlers_.push_back(client);
+			CefWindowInfo info;
+			RECT rectnew = { 100,100,800,600 };
 
-		info.SetAsChild(hWebKitBrowserWnd_, rectnew);
-		CefBrowserSettings browserSettings;
+			info.SetAsChild(hWebKitBrowserWnd_, rectnew);
+			CefBrowserSettings browserSettings;
 
-		std::wstring strURL(_T("http://www.baidu.com"));
-		CefBrowserHost::CreateBrowser(info, client, strURL, browserSettings, NULL);
+			std::wstring strURL(_T("http://www.baidu.com"));
+			CefBrowserHost::CreateBrowser(info, client, strURL, browserSettings, NULL);
 
-		strURLs_.push_back(strURL);
-	*/
+			strURLs_.push_back(strURL);
+		*/
 
-	//	NewPage(_T("www.csdn.net"));
-	// ++nHitIndex_;
+		//	NewPage(_T("www.csdn.net"));
+		// ++nHitIndex_;
 	}
 
 	void CCEFWebkitUI::SetPos(RECT rc)
@@ -61,82 +61,55 @@ namespace DuiLib
 		CefRefPtr<CefBrowserHost>  pBrowerHost = NULL;
 		CefWindowHandle hwnd = NULL;
 
-		if (clientHandler_!=NULL)
+		if (clientHandler_ != NULL)
 		{
 
-			for (UINT idx = 0; idx <clientHandler_.get()->browser_list_.size(); idx++)
+			for (UINT idx = 0; idx < clientHandler_.get()->browser_list_.size(); idx++)
 			{
 
 				pBrowser = clientHandler_.get()->browser_list_.at(idx);
 
-					if (pBrowser)
-					{
-						pBrowerHost = pBrowser->GetHost();
+				if (pBrowser)
+				{
+					pBrowerHost = pBrowser->GetHost();
 
-						if (pBrowerHost)
+					if (pBrowerHost)
+					{
+
+						hwnd = pBrowerHost->GetWindowHandle();
+						if ((hwnd != NULL) && (IsWindow(hwnd)))
 						{
 
-							hwnd = pBrowerHost->GetWindowHandle();
-							if ((hwnd != NULL) && (IsWindow(hwnd)))
+							if (idx != nHitIndex_)
 							{
-
-								if (idx != nHitIndex_)
-								{
-									//MoveWindow(hwnd, 0, 0, 0, 0, false);
-									ShowWindow(hwnd, SW_HIDE);
-								}
-								else
-								{
-									ShowWindow(hwnd, SW_SHOW);
-									MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, true);
-								}
-
+								//MoveWindow(hwnd, 0, 0, 0, 0, false);
+								ShowWindow(hwnd, SW_HIDE);
+							}
+							else
+							{
+								ShowWindow(hwnd, SW_SHOW);
+								MoveWindow(hwnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, true);
 							}
 
 						}
 
 					}
 
-				
+				}
+
+
 
 			}
 
 
 		}
 
-
-	
-
 	}
 
 	void CCEFWebkitUI::DoEvent(TEventUI& event)
 	{
 		__super::DoEvent(event);
-
-		/*
-
-		else if (event.Type ==UIEVENT_SETFOCUS)
-		{
-			pWebView_->focus();
-		}
-		else if (event.Type == UIEVENT_KILLFOCUS)
-		{
-			pWebView_->unfocus();
-		}
-		else if(event.Type== UIEVENT_WINDOWSIZE)
-		{
-			pWebView_->resize(GET_X_LPARAM(event.lParam), GET_Y_LPARAM(event.lParam));
-		}
-		if (!handled)
-		{
-			//  CControlUI::DoEvent(event);
-		}
-		*/
 	}
-
-
-
-
 
 	void CCEFWebkitUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
@@ -150,12 +123,10 @@ namespace DuiLib
 		}
 	}
 
-	
+
 	//新增页签
 	void CCEFWebkitUI::NewPage(CefString Url)
 	{
-		strURLs_.push_back(Url);
-
 		CefWindowInfo info;
 
 		//RECT rectnew = { 0,200,800,600 };//= GetPos();
@@ -166,72 +137,54 @@ namespace DuiLib
 		CefBrowserSettings browserSettings;
 
 		CefBrowserHost::CreateBrowser(info, static_cast<CefRefPtr<CefClient>>(clientHandler_), Url.c_str(), browserSettings, NULL);
-		//for (UINT i = 0; i < clientHandlers_.size(); i++)
-		//{
-		//	if (clientHandlers_.at(i)->GetBrowser() && !clientHandlers_.at(i)->GetBrowser()->GetMainFrame()->GetURL().empty())
-		//	{
-		//		CefRefPtr<CefBrowserHost> t_host = clientHandlers_.at(i)->GetBrowser()->GetHost();
-		//		CefWindowHandle hwnd = t_host->GetWindowHandle();
-		//		if (i < clientHandlers_.size() - 1)
-		//		{
-		//			//MoveWindow(hwnd, 0, 0, 0, 0, false);
-		//			ShowWindow(hwnd, SW_HIDE);
-		//		}
-		//		else //显示最新标签
-		//		{
-		//			MoveWindow(hwnd, rectnew.left, rectnew.top, rectnew.right-rectnew.left, rectnew.bottom-rectnew.top, true);
-		//		}
-		//	}
-		//}
 
 		nHitIndex_ = clientHandler_->browser_list_.size();
 
 		NeedParentUpdate();
 	}
 
-
 	//删除页签
-	void CCEFWebkitUI::DelPage(int idxDel)
+	void CCEFWebkitUI::DelPage(int nWebBrowserID)
 	{
-		int t_Index = 0;
 
+		int idx = 0;
 
+		BOOL bNeedRemove = FALSE;
 
-		vector<CefRefPtr<CefBrowser>>::iterator cWebBrowerit = clientHandler_->browser_list_.begin();
+		vector<CefRefPtr<CefBrowser>>::const_iterator  itTmpWebBrower = clientHandler_->browser_list_.begin();
 
-		if (strURLs_.size() > 1)
+		for (; itTmpWebBrower != clientHandler_->browser_list_.end(); itTmpWebBrower++)
 		{
+			++idx;
 
-			for (vector<wstring>::iterator it = strURLs_.begin(); it != strURLs_.end();)   //for循环中不要it++
+			if (nWebBrowserID == itTmpWebBrower->get()->GetIdentifier())
 			{
-				if (t_Index == idxDel)
-				{
 
-					::MoveWindow(cWebBrowerit->get()->GetHost()->GetWindowHandle(), 0, 0, 0, 0, true);
-					clientHandler_->CloseHostBrowser(cWebBrowerit->get(),true);
-					//clientHandlers_.erase(cWebBrowerit++);
-					strURLs_.erase(it++);
-					break;
+				if (clientHandler_->browser_list_.size() == 1)
+				{
+					itTmpWebBrower->get()->GetMainFrame()->LoadURL(_T("about:blank"));
 				}
 				else
 				{
-					it++;
-					cWebBrowerit++;
+					bNeedRemove = TRUE;
+					::MoveWindow(itTmpWebBrower->get()->GetHost()->GetWindowHandle(), 0, 0, 0, 0, true);
+					nHitIndex_ = idx - 1;
 				}
 
-				t_Index++;
+				break;
 			}
+
 		}
-		else
+
+		if (bNeedRemove)
 		{
-			strURLs_.at(0) = _T("about:blank");
-			clientHandler_->browser_list_.at(0)->GetMainFrame()->LoadURL(strURLs_.at(0).c_str());
-			/*	CEditUI* pEdit = (CEditUI*)m_PaintManager.FindControl(_T("url"));
-				if (pEdit)
-				{
-					pEdit->SetText(m_UEdit.at(0));
-				}*/
+			clientHandler_->CloseHostBrowser(itTmpWebBrower->get(), true);
+			clientHandler_->browser_list_.erase(itTmpWebBrower);
 		}
+
+
+		ReFresh();
+
 	}
 
 	void CCEFWebkitUI::CloseAllPage()
@@ -252,25 +205,68 @@ namespace DuiLib
 		}
 	}
 
-	void CCEFWebkitUI::Refresh()
+	void CCEFWebkitUI::ReFresh()
 	{
-		if (clientHandler_->browser_list_.empty())
-		{
-			return;
-		}
 
-		clientHandler_->browser_list_.at(nHitIndex_)->Reload();
+		RECT rectnew = GetPos();
+
+		SetPos(rectnew);
+
+		//if (clientHandler_->browser_list_.empty())
+		//{
+		//	return;
+		//}
+
+		//clientHandler_->browser_list_.at(nHitIndex_)->Reload();
 
 	}
 
-	CefString CCEFWebkitUI::GetFinalURL(size_t idx)
+	void CCEFWebkitUI::ReFresh(int nWebBrowserID)
 	{
-		if ((idx<0)||(idx>clientHandler_->browser_list_.size()))
+		int idx = 0;
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
 		{
-			return "";
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				nHitIndex_ = idx;
+			}
+
+			++idx;
 		}
 
-		return	clientHandler_->browser_list_.at(idx)->GetMainFrame()->GetURL();
+		ReFresh();
+	}
+
+	void CCEFWebkitUI::ReLoad(int nWebBrowserID)
+	{
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				it->get()->Reload();
+			}
+		}
+
+	}
+
+	CefString CCEFWebkitUI::GetFinalURL(int nWebBrowserID)
+	{
+		CefString strURL = "";
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				strURL = it->get()->GetMainFrame()->GetURL();
+			}
+
+		}
+
+		return strURL;
 
 	}
 
@@ -282,6 +278,7 @@ namespace DuiLib
 	void CCEFWebkitUI::SetHitIndex(int idx)
 	{
 		nHitIndex_ = idx;
+		ReFresh();
 		//++TODO: show web 
 	}
 

@@ -18,13 +18,15 @@ public:
 	virtual void OnFinalMessage(HWND hWnd);
 	virtual LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	virtual	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	virtual void OnClick(TNotifyUI& msg) override;
     virtual void InitWindow();
     virtual void Notify(TNotifyUI& msg);
     virtual LRESULT HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
 	void OnInitComplate();
-	void OnTitleChanged(int nID,const CefString str);
-	void OnAfterCreate(int nID);
+	void OnTitleChanged(int nWebBrowserID,const CefString str);
+	void OnAfterCreate(int nWebBrowserID);
+	void OnBrowserClose(int nBrowserID);
 public:
     static CEFWebkitBrowserWnd* pCEFWebkitBrowserWnd;
     

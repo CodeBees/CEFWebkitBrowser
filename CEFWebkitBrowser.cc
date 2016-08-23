@@ -57,15 +57,52 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 	if ((pWKEWebkitCtrl_ != NULL) && (!pWKEWebkitCtrl_->IsClosed()))
 	{
-		pWKEWebkitCtrl_->CloseAllPage();
+		//pWKEWebkitCtrl_->CloseAllPage();
 		bHandled = TRUE;
-		// // Cancel the close.
+		//  Cancel the close.
+
+	}
+	else
+	{
+		bHandled = false;
+	}
+
+	return 0;
+}
+
+void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
+{
+	CDuiString strName = msg.pSender->GetName();
+
+	if (strName.Find(_T("webtab")) != -1)
+	{
+		COptionUI* pOpt = (COptionUI*)msg.pSender;
+
+		COptionTag* pTag = (COptionTag*)pOpt->GetTag();
+		if (pTag)
+		{
+			RECT rc = pOpt->GetPos();
+			if (msg.ptMouse.x > rc.right - 20 && msg.ptMouse.y < rc.top + 15)
+			{
+				pWKEWebkitCtrl_->DelPage(pTag->nID_);
+
+			}
+			else
+			{
+				pWKEWebkitCtrl_->ReFresh(pTag->nID_);
+			}
+
+		}
+	}
+	else if (_T("ui_btn_close")== strName)
+	{
+		if ((pWKEWebkitCtrl_ != NULL) && (!pWKEWebkitCtrl_->IsClosed()))
+		{
+			pWKEWebkitCtrl_->CloseAllPage();
+		}
 
 	}
 
-	bHandled = false;
-
-	return 0;
 }
 
 
@@ -86,18 +123,27 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 		{
 
 		}
-		if (msg.pSender->GetName() == _T("ui_btn_goforward"))
+		else if (msg.pSender->GetName() == _T("ui_btn_goforward"))
 		{
 
 		}
-		if (msg.pSender->GetName() == _T("ui_btn_ensure"))
+		else if (msg.pSender->GetName() == _T("ui_btn_ensure"))
 		{
 
 		}
-		if (msg.pSender->GetName() == _T("ui_btn_home"))
+		else if (msg.pSender->GetName() == _T("ui_btn_home"))
 		{
 
 		}
+		else if (msg.pSender->GetName() == _T("ui_btn_newpage"))
+		{
+			if (pWKEWebkitCtrl_)
+			{
+				pWKEWebkitCtrl_->NewPage(_T("about:black"));
+			}
+		}
+
+
 	}
 	//需要关闭richedit的want return属性
 	else if (msg.sType == DUI_MSGTYPE_RETURN)
@@ -180,9 +226,11 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 			}*/
 
 
+		int nBrowserID = wParam;
+
 		if (pURLEditCtrl_)
 		{
-			pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pWKEWebkitCtrl_->GetHitIndex()).c_str());
+			pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(nBrowserID).c_str());
 		}
 
 		memset(szBuf, '\0', sizeof(szBuf));
@@ -242,6 +290,11 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 		OnAfterCreate(wParam);
 	}
 	break;
+	case UM_CEF_BROWSERCLOSE:
+	{
+		OnBrowserClose(wParam);
+	}
+		break;
 	default:
 		break;
 	}
@@ -281,8 +334,8 @@ void CEFWebkitBrowserWnd::OnTitleChanged(int nID, const CefString str)
 			if (str.length() > 8)
 			{
 				wchar_t strtilte[256] = { '\0' };
-				StringCbCopyN(strtilte, sizeof(strtilte), str.c_str(), 6);
-				StringCbCat(strtilte, sizeof(strtilte) - 6, _T("..."));
+				StringCbCopyN(strtilte, sizeof(strtilte), str.c_str(), 6*sizeof(TCHAR));
+				StringCbCat(strtilte, sizeof(strtilte) - 6 * sizeof(TCHAR), _T("..."));
 				pOpt->SetText(strtilte);
 			}
 			else
@@ -315,5 +368,29 @@ void CEFWebkitBrowserWnd::OnAfterCreate(int nID)
 	COptionTag* pTag = new COptionTag(nID);
 
 	pOpt->SetTag((UINT_PTR)pTag);
+
+}
+
+void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
+{
+
+	int nCountWebtab = pWebTabContainer_->GetCount();
+
+	for (int idx = 0; idx < nCountWebtab; idx++)
+	{
+
+		COptionUI* pOpt = (COptionUI*)pWebTabContainer_->GetItemAt(idx);
+
+
+		COptionTag* pTag = (COptionTag*)pOpt->GetTag();
+
+
+		if ((pTag != NULL) && (pTag->nID_ == nBrowserID))
+		{
+			pWebTabContainer_->Remove(pOpt);
+			break;
+		}
+	}
+
 
 }
