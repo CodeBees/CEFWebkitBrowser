@@ -138,9 +138,9 @@ namespace DuiLib
 
 		CefBrowserHost::CreateBrowser(info, static_cast<CefRefPtr<CefClient>>(clientHandler_), Url.c_str(), browserSettings, NULL);
 
-		nHitIndex_ = clientHandler_->browser_list_.size();
+		//nHitIndex_ = clientHandler_->browser_list_.size();
 
-		NeedParentUpdate();
+		//NeedParentUpdate();
 	}
 
 	//É¾³ýÒ³Ç©
@@ -209,16 +209,7 @@ namespace DuiLib
 	{
 
 		RECT rectnew = GetPos();
-
 		SetPos(rectnew);
-
-		//if (clientHandler_->browser_list_.empty())
-		//{
-		//	return;
-		//}
-
-		//clientHandler_->browser_list_.at(nHitIndex_)->Reload();
-
 	}
 
 	void CCEFWebkitUI::ReFresh(int nWebBrowserID)
@@ -250,6 +241,18 @@ namespace DuiLib
 			}
 		}
 
+	}
+
+	void CCEFWebkitUI::LoadURL(int nWebBrowserID, CefString & strURL)
+	{
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				it->get()->GetMainFrame()->LoadURL(strURL);
+			}
+		}
 	}
 
 	CefString CCEFWebkitUI::GetFinalURL(int nWebBrowserID)

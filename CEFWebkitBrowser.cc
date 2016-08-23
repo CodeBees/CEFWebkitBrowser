@@ -86,15 +86,45 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 			{
 				pWKEWebkitCtrl_->DelPage(pTag->nID_);
 
+				int nIdx = pWebTabContainer_->GetItemIndex(pOpt);
+
+
+				if (nIdx != -1)
+				{
+					if (nIdx == 0)
+					{
+						nIdx = 1;
+					}
+					else
+					{
+						--nIdx;
+					}
+
+					COptionUI* pShilfOption = dynamic_cast<COptionUI*>(pWebTabContainer_->GetItemAt(nIdx));
+					COptionTag* pShilfTag = (COptionTag*)pShilfOption->GetTag();
+
+
+					if ((pShilfOption) && (pShilfTag != NULL))
+					{
+						pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
+						pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
+						pShilfOption->Selected(true);
+					}
+
+				}
+
+
 			}
 			else
 			{
 				pWKEWebkitCtrl_->ReFresh(pTag->nID_);
+				pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pTag->nID_).c_str());
+
 			}
 
 		}
 	}
-	else if (_T("ui_btn_close")== strName)
+	else if (_T("ui_btn_close") == strName)
 	{
 		if ((pWKEWebkitCtrl_ != NULL) && (!pWKEWebkitCtrl_->IsClosed()))
 		{
@@ -148,11 +178,34 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 	//需要关闭richedit的want return属性
 	else if (msg.sType == DUI_MSGTYPE_RETURN)
 	{
+		CefString strURL;
+
 		if (pURLEditCtrl_ == msg.pSender)
 		{
 			if (pURLEditCtrl_&&pWKEWebkitCtrl_)
 			{
-				//pWKEWebkitUI->LoadURL(pURLEditUI->GetText().GetData());
+
+
+				if (pURLEditCtrl_->GetText().IsEmpty())
+				{
+					return;
+				}
+				else
+				{
+					strURL = pURLEditCtrl_->GetText().GetData();
+				}
+
+				COptionUI* pCurrentOpt = NULL;
+				COptionTag* pTag = NULL;
+
+				if (pCurrentOpt = GetActiveOption())
+				{
+					if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+					{
+						pWKEWebkitCtrl_->LoadURL(pTag->nID_, strURL);
+					}
+				}
+
 			}
 		}
 	}
@@ -166,7 +219,7 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 
 LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	TCHAR szBuf[256];
+	//TCHAR szBuf[256];
 
 	switch (uMsg)
 	{
@@ -191,88 +244,13 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 	break;
 	case UM_CEF_WEBLOADEND:
 	{
-
-		/*	int index = m_pTabLayoutUI->GetCurSel();
-			CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
-			if (pHor)
-			{
-				int iCount = m_pTabSwitchHor->GetCount();
-				for (int i = 0; i < iCount; i++)
-				{
-					COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
-					CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
-					if (pHaveHor == pHor)
-					{
-						if (m_cWebClient.at(index)->GetBrowser()->CanGoBack())
-						{
-							m_BackBtn->SetEnabled(true);
-						}
-						else
-						{
-							m_BackBtn->SetEnabled(false);
-						}
-						if (m_cWebClient.at(index)->GetBrowser()->CanGoForward())
-						{
-							m_ForwardBtn->SetEnabled(true);
-						}
-						else
-						{
-							m_ForwardBtn->SetEnabled(false);
-						}
-						m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
-						break;
-					}
-				}
-			}*/
-
-
-		int nBrowserID = wParam;
-
-		if (pURLEditCtrl_)
-		{
-			pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(nBrowserID).c_str());
-		}
-
-		memset(szBuf, '\0', sizeof(szBuf));
-		CefString* pStrComplateURL = (CefString*)lParam;
-		if (pStrComplateURL != NULL)
-		{
-			StringCbPrintf(szBuf, sizeof(szBuf), _T("加载完成:%s"), pStrComplateURL->c_str());
-			delete pStrComplateURL;
-		}
-
-		pWebStateCtrl_->SetText(szBuf);
+		OnWebLoadEnd(wParam, lParam);
 	}
 	break;
 
 	case UM_CEF_WEBLOADSTART:
 	{
-		memset(szBuf, '\0', sizeof(szBuf));
-		CefString* pStrComplateURL = (CefString*)lParam;
-		if (pStrComplateURL != NULL)
-		{
-			StringCbPrintf(szBuf, sizeof(szBuf), _T("正在加载:%s"), pStrComplateURL->c_str());
-			delete pStrComplateURL;
-		}
-
-		pWebStateCtrl_->SetText(szBuf);
-
-		//int index = m_pTabLayoutUI->GetCurSel();
-		/*	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
-		if (pHor)
-		{
-			int iCount = m_pTabSwitchHor->GetCount();
-			for (int i = 0; i < iCount; i++)
-			{
-				COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
-				CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
-				if (pHaveHor == pHor)
-				{
-					m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
-					break;
-				}
-			}
-		}*/
+		OnWebLoadStart(wParam, lParam);
 	}
 	break;
 	case UM_CEF_WEBTITLECHANGE:
@@ -294,7 +272,7 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 	{
 		OnBrowserClose(wParam);
 	}
-		break;
+	break;
 	default:
 		break;
 	}
@@ -334,7 +312,7 @@ void CEFWebkitBrowserWnd::OnTitleChanged(int nID, const CefString str)
 			if (str.length() > 8)
 			{
 				wchar_t strtilte[256] = { '\0' };
-				StringCbCopyN(strtilte, sizeof(strtilte), str.c_str(), 6*sizeof(TCHAR));
+				StringCbCopyN(strtilte, sizeof(strtilte), str.c_str(), 6 * sizeof(TCHAR));
 				StringCbCat(strtilte, sizeof(strtilte) - 6 * sizeof(TCHAR), _T("..."));
 				pOpt->SetText(strtilte);
 			}
@@ -352,7 +330,7 @@ void CEFWebkitBrowserWnd::OnTitleChanged(int nID, const CefString str)
 
 
 
-void CEFWebkitBrowserWnd::OnAfterCreate(int nID)
+void CEFWebkitBrowserWnd::OnAfterCreate(int nWebBrowserID)
 {
 	// 创建标签OPTION按钮
 	CDuiString sAttr;
@@ -365,9 +343,12 @@ void CEFWebkitBrowserWnd::OnAfterCreate(int nID)
 	pWebTabContainer_->AddAt(pOpt, iCount - 1);
 
 	// 把标签按钮和浏览器id关联起来
-	COptionTag* pTag = new COptionTag(nID);
+	COptionTag* pTag = new COptionTag(nWebBrowserID);
+
+	pWKEWebkitCtrl_->ReFresh(pTag->nID_);
 
 	pOpt->SetTag((UINT_PTR)pTag);
+	pOpt->Selected(true);
 
 }
 
@@ -393,4 +374,123 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 	}
 
 
+}
+
+void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
+{
+
+	/*	int index = m_pTabLayoutUI->GetCurSel();
+	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
+	if (pHor)
+	{
+	int iCount = m_pTabSwitchHor->GetCount();
+	for (int i = 0; i < iCount; i++)
+	{
+	COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
+	CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
+	if (pHaveHor == pHor)
+	{
+	if (m_cWebClient.at(index)->GetBrowser()->CanGoBack())
+	{
+	m_BackBtn->SetEnabled(true);
+	}
+	else
+	{
+	m_BackBtn->SetEnabled(false);
+	}
+	if (m_cWebClient.at(index)->GetBrowser()->CanGoForward())
+	{
+	m_ForwardBtn->SetEnabled(true);
+	}
+	else
+	{
+	m_ForwardBtn->SetEnabled(false);
+	}
+	m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
+	break;
+	}
+	}
+	}*/
+
+	TCHAR szBuf[256];
+	int nBrowserID = wParam;
+
+	if (pURLEditCtrl_)
+	{
+
+		COptionUI* pCurrentOpt = NULL;
+		COptionTag* pTag = NULL;
+
+		if (pCurrentOpt = GetActiveOption())
+		{
+			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+			{
+				if (pTag->nID_== nBrowserID)
+				{
+					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(nBrowserID).c_str());
+				}
+			}
+		}
+	}
+
+	memset(szBuf, '\0', sizeof(szBuf));
+	CefString* pStrComplateURL = (CefString*)lParam;
+	if (pStrComplateURL != NULL)
+	{
+		StringCbPrintf(szBuf, sizeof(szBuf), _T("加载完成:%s"), pStrComplateURL->c_str());
+		delete pStrComplateURL;
+	}
+
+	pWebStateCtrl_->SetText(szBuf);
+}
+
+void CEFWebkitBrowserWnd::OnWebLoadStart(WPARAM wParam, LPARAM lParam)
+{
+	TCHAR szBuf[256];
+	memset(szBuf, '\0', sizeof(szBuf));
+	CefString* pStrComplateURL = (CefString*)lParam;
+	if (pStrComplateURL != NULL)
+	{
+		StringCbPrintf(szBuf, sizeof(szBuf), _T("正在加载:%s"), pStrComplateURL->c_str());
+		delete pStrComplateURL;
+	}
+
+	pWebStateCtrl_->SetText(szBuf);
+
+	//int index = m_pTabLayoutUI->GetCurSel();
+	/*	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
+	if (pHor)
+	{
+	int iCount = m_pTabSwitchHor->GetCount();
+	for (int i = 0; i < iCount; i++)
+	{
+	COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
+	CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
+	if (pHaveHor == pHor)
+	{
+	m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
+	break;
+	}
+	}
+	}*/
+
+}
+
+COptionUI * CEFWebkitBrowserWnd::GetActiveOption() const
+{
+	COptionUI* pCurrentOpt = NULL;
+	int nCountWebtab = pWebTabContainer_->GetCount();
+
+	for (int idx = 0; idx < nCountWebtab; idx++)
+	{
+		COptionUI* pOpt = (COptionUI*)pWebTabContainer_->GetItemAt(idx);
+
+		if (pOpt->IsSelected())
+		{
+			pCurrentOpt = pOpt;
+		}
+
+	}
+
+	return pCurrentOpt;
 }

@@ -12,6 +12,13 @@ CCefClientApp::~CCefClientApp()
 }
 
 
+void CCefClientApp::OnBeforeCommandLineProcessing(const CefString & process_type, CefRefPtr<CefCommandLine> command_line)
+{
+	//¼ÓÔØflash²å¼þ
+	command_line->AppendSwitchWithValue("--ppapi-flash-path", "ppflash/18_0_0_209/pepflashplayer32_18_0_0_209.dll");
+	command_line->AppendSwitchWithValue("--ppapi-flash-version", "18.0.0.209");
+}
+
 void CCefClientApp::OnContextInitialized()
 {
 	//	CEF_REQUIRE_UI_THREAD();

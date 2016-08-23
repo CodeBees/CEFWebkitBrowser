@@ -29,6 +29,7 @@ namespace DuiLib
 		void ReFresh();
 		void ReFresh(int nWebBrowserID);
 		void ReLoad(int nWebBrowserID);
+		void LoadURL(int nWebBrowserID, CefString& strURL);
 		CefString GetFinalURL(int nWebBrowserID);
 		int GetHitIndex() const;
 		void SetHitIndex(int idx);

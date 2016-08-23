@@ -58,6 +58,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	//multi_threaded_message_loop=true 这样设置的目的是使cef的browser ui线程和程序的线程分离，使用duilib的消息循环函数
 	settings.multi_threaded_message_loop = true;
 
+
 	// SimpleApp implements application-level callbacks for the browser process.
 	// It will create the first browser instance in OnContextInitialized() after
 	// CEF has initialized.
