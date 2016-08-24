@@ -6,7 +6,7 @@
 #include "include/cef_browser.h"
 
 
-class CCefClientHandler : public CefClient,public CefDisplayHandler,public CefLifeSpanHandler,public CefLoadHandler,public CefRequestHandler
+class CCefClientHandler : public CefClient,public CefDisplayHandler,public CefLifeSpanHandler,public CefLoadHandler,public CefRequestHandler, public CefContextMenuHandler
 {
 public:
 	CCefClientHandler();
@@ -21,24 +21,32 @@ public:
 
 	virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override;
 
-	// CefDisplayHandler methods:
+	virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override{
+		return this;
+	}
+
+	// ----------------CefDisplayHandler methods:-------------------
 	virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,const CefString& title) override;
 
-	// CefLifeSpanHandler methods:
-	virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
-	//virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
-	virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
+	//---------------- CefLifeSpanHandler methods:----------------------------
+	virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& target_url, const CefString& target_frame_name,
+		CefLifeSpanHandler::WindowOpenDisposition target_disposition, bool user_gesture, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access) override;
 
-	// 释放browser引用
+	virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
+	virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
 	virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
+
+	// ----------------CefLoadHandler methods:---------------------------
 	virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame) override;
 	virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,CefRefPtr<CefFrame> frame,int httpStatusCode) override;
-	// CefLoadHandler methods:
 	virtual void OnLoadError(CefRefPtr<CefBrowser> browser,CefRefPtr<CefFrame> frame,ErrorCode errorCode,const CefString& errorText,const CefString& failedUrl) override;
-	virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,CefRefPtr<CefFrame> frame,const CefString& target_url,const CefString& target_frame_name,
-		CefLifeSpanHandler::WindowOpenDisposition target_disposition,bool user_gesture,const CefPopupFeatures& popupFeatures,	CefWindowInfo& windowInfo,CefRefPtr<CefClient>& client,CefBrowserSettings& settings,bool* no_javascript_access) override;
+	//-----------------
 
-	//CefRefPtr<CefBrowser> GetBrowser();
+	//菜单处理  
+	virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;
+
+	virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags) override;
+
 	void CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool force_close) ;
 	// Request that all existing browser windows close.
 	void CloseAllBrowsers(bool force_close);

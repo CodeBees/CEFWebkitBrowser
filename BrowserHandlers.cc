@@ -34,14 +34,13 @@
 ///
 
 
-
 CCefClientHandler::CCefClientHandler() :hWnd_(NULL), is_closing_(false)
 {
 }
 
 CCefClientHandler::~CCefClientHandler()
 {
-	int a = 30;
+
 }
 
 
@@ -83,11 +82,34 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 	CEF_REQUIRE_UI_THREAD();
 	AutoLock lock_scope(this);
 
+	lock_.Acquire();
+
+
+	// Remove from the list of existing browsers.
+	BrowserList::iterator bit = browser_list_.begin();
+
+	for (; bit != browser_list_.end(); bit++)
+	{
+		if ((*bit)->IsSame(browser))
+		{
+			browser_list_.erase(bit);
+			browser = NULL;
+			break;
+		}
+	}
+
+
+	lock_.Release();
+
+
+
 	if (browser_list_.size() == 0) {
 		// Set a flag to indicate that the window close should be allowed.
 		is_closing_ = true;
+		CefQuitMessageLoop();
 	}
 
+	
 	return false;
 }
 
@@ -96,41 +118,32 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
 	CEF_REQUIRE_UI_THREAD();
 
-	lock_.Acquire();
+	AutoLock lock_scope(this);
+//	lock_.Acquire();
 
-	BOOL bNeedRemove = FALSE;
-
-//	AutoLock lock_scope(this);
-
-	// Remove from the list of existing browsers.
 	BrowserList::iterator bit = browser_list_.begin();
+
 	for (; bit != browser_list_.end(); bit++)
 	{
 		if ((*bit)->IsSame(browser))
 		{
+			browser_list_.erase(bit);
+			browser = NULL;
 			break;
 		}
 	}
 
-	if (bNeedRemove)
-	{
-		browser_list_.erase(bit);
-	}
-
-
-	browser = NULL;
 
 	if (browser_list_.empty()) 
 	{
+		is_closing_ = true;
+		CefQuitMessageLoop();
 		// All browser windows have closed. Quit the application message loop.
-	
 		//CefQuitMessageLoop();
 		//PostQuitMessage(0l);
 	}
 
-	lock_.Release();
-
-
+//	lock_.Release();
 }
 
 void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
@@ -200,6 +213,41 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 }
 
+void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
+{
+	//在这里，我添加了自己想要的菜单  
+	cef_context_menu_type_flags_t flag = params->GetTypeFlags();
+	if (flag & CM_TYPEFLAG_PAGE)
+	{//普通页面的右键消息  
+		model->SetLabel(MENU_ID_BACK, L"后退");
+		model->SetLabel(MENU_ID_FORWARD, L"前进");
+		model->SetLabel(MENU_ID_VIEW_SOURCE, L"查看源代码");
+		model->SetLabel(MENU_ID_PRINT, L"打印");
+		model->SetLabel(MENU_ID_RELOAD, L"刷新");
+		model->SetLabel(MENU_ID_RELOAD_NOCACHE, L"强制刷新");
+		model->SetLabel(MENU_ID_STOPLOAD, L"停止加载");
+		model->SetLabel(MENU_ID_REDO, L"重复");
+	
+		
+	}
+	if (flag & CM_TYPEFLAG_EDITABLE)
+	{//编辑框的右键消息  
+		model->SetLabel(MENU_ID_UNDO, L"撤销");
+		model->SetLabel(MENU_ID_REDO, L"重做");
+		model->SetLabel(MENU_ID_CUT, L"剪切");
+		model->SetLabel(MENU_ID_COPY, L"复制");
+		model->SetLabel(MENU_ID_PASTE, L"粘贴");
+		model->SetLabel(MENU_ID_DELETE, L"删除");
+		model->SetLabel(MENU_ID_SELECT_ALL, L"全选");
+	}
+}
+
+bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags)
+{
+	return false;
+}
+
+
 
 void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool force_close)
 {
@@ -229,6 +277,11 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 		return;
 	}
 
+
+
+	lock_.Acquire();
+
+
 	if (browser_list_.empty())
 		return;
 
@@ -239,8 +292,8 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 		
 	}
 
-	browser_list_.clear();
-
+	lock_.Release();
+	
 }
 
 
@@ -248,3 +301,5 @@ bool CCefClientHandler::IsClosing() const
 { 
 	return is_closing_; 
 }
+
+

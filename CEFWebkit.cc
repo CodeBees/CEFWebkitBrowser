@@ -178,8 +178,9 @@ namespace DuiLib
 
 		if (bNeedRemove)
 		{
+			
 			clientHandler_->CloseHostBrowser(itTmpWebBrower->get(), true);
-			clientHandler_->browser_list_.erase(itTmpWebBrower);
+			//clientHandler_->browser_list_.erase(itTmpWebBrower);
 		}
 
 
