@@ -64,7 +64,7 @@ LRESULT CEFWebkitBrowserWnd::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	}
 	else
 	{
-		bHandled = false;
+		bHandled = TRUE;
 	}
 
 	return 0;
@@ -82,19 +82,15 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 		if (pTag)
 		{
 			RECT rc = pOpt->GetPos();
-			if (msg.ptMouse.x > rc.right - 20 && msg.ptMouse.y < rc.top + 15)
+			if (msg.ptMouse.x > rc.right - 30 && msg.ptMouse.y < rc.top + 20)
 			{
 				pWKEWebkitCtrl_->DelPage(pTag->nID_);
-
-
-
-
 			}
 			else
 			{
 				pWKEWebkitCtrl_->ReFresh(pTag->nID_);
 				pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pTag->nID_).c_str());
-
+				SwitchUIState();
 			}
 
 		}
@@ -107,6 +103,34 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 		}
 
 	}
+	else if (_T("ui_btn_goforward") == strName)
+	{
+		COptionUI* pCurrentOpt = NULL;
+		COptionTag* pTag = NULL;
+
+		if (pCurrentOpt = GetActiveOption())
+		{
+			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+			{
+				
+				pWKEWebkitCtrl_->GoForward(pTag->nID_);
+			}
+		}
+	}
+	else if (_T("ui_btn_goback") == strName)
+	{
+		COptionUI* pCurrentOpt = NULL;
+		COptionTag* pTag = NULL;
+
+		if (pCurrentOpt = GetActiveOption())
+		{
+			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+			{
+
+				pWKEWebkitCtrl_->GoBack(pTag->nID_);
+			}
+		}
+	}
 
 }
 
@@ -116,6 +140,9 @@ void CEFWebkitBrowserWnd::InitWindow()
 	pWebStateCtrl_ = dynamic_cast<CLabelUI*>(FindControl(_T("ui_lbl_status")));
 	pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_urlinput")));
 	pWebTabContainer_ = dynamic_cast<CHorizontalLayoutUI*>(FindControl(_T("ui_hl_urltabs")));
+	pGoBackCtrl_ = dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goback")));
+	pGoForwardCtrl_= dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goforward")));;
+
 
 }
 
@@ -199,11 +226,12 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 
 	switch (uMsg)
 	{
-	case UM_CEF_COMPLETEELEASE:
+
+	case UM_CEF_POSTQUITMESSAGE:
 		bHandled = TRUE;
 		//Sleep(2000);
-		//CefQuitMessageLoop();
-		//PostQuitMessage(0L);
+	//	CefQuitMessageLoop();
+		PostQuitMessage(0L);
 		break;
 	case UM_CEF_WEBLOADPOPUP:
 	{
@@ -369,13 +397,10 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 					pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
 					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
 					pShilfOption->Selected(true);
+					SwitchUIState();
 				}
 
-
-
 			}
-			
-
 
 			break;
 		}
@@ -388,39 +413,6 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 
 void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 {
-
-	/*	int index = m_pTabLayoutUI->GetCurSel();
-	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
-	if (pHor)
-	{
-	int iCount = m_pTabSwitchHor->GetCount();
-	for (int i = 0; i < iCount; i++)
-	{
-	COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
-	CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
-	if (pHaveHor == pHor)
-	{
-	if (m_cWebClient.at(index)->GetBrowser()->CanGoBack())
-	{
-	m_BackBtn->SetEnabled(true);
-	}
-	else
-	{
-	m_BackBtn->SetEnabled(false);
-	}
-	if (m_cWebClient.at(index)->GetBrowser()->CanGoForward())
-	{
-	m_ForwardBtn->SetEnabled(true);
-	}
-	else
-	{
-	m_ForwardBtn->SetEnabled(false);
-	}
-	m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
-	break;
-	}
-	}
-	}*/
 
 	TCHAR szBuf[256];
 	int nBrowserID = wParam;
@@ -438,6 +430,7 @@ void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 				if (pTag->nID_== nBrowserID)
 				{
 					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(nBrowserID).c_str());
+					SwitchUIState();
 				}
 			}
 		}
@@ -467,23 +460,6 @@ void CEFWebkitBrowserWnd::OnWebLoadStart(WPARAM wParam, LPARAM lParam)
 
 	pWebStateCtrl_->SetText(szBuf);
 
-	//int index = m_pTabLayoutUI->GetCurSel();
-	/*	CHorizontalLayoutUI* pHor = (CHorizontalLayoutUI*)m_pTabLayoutUI->GetItemAt(index);
-	if (pHor)
-	{
-	int iCount = m_pTabSwitchHor->GetCount();
-	for (int i = 0; i < iCount; i++)
-	{
-	COptionUI* pOpt = (COptionUI*)m_pTabSwitchHor->GetItemAt(i);
-	CHorizontalLayoutUI* pHaveHor = (CHorizontalLayoutUI*)pOpt->GetTag();
-	if (pHaveHor == pHor)
-	{
-	m_UEdit.at(index) = m_cWebClient.at(index)->m_url.c_str();
-	break;
-	}
-	}
-	}*/
-
 }
 
 COptionUI * CEFWebkitBrowserWnd::GetActiveOption() const
@@ -503,4 +479,38 @@ COptionUI * CEFWebkitBrowserWnd::GetActiveOption() const
 	}
 
 	return pCurrentOpt;
+}
+
+void CEFWebkitBrowserWnd::SwitchUIState()
+{
+	COptionUI* pCurrentOpt = NULL;
+	COptionTag* pTag = NULL;
+
+	if (pCurrentOpt = GetActiveOption())
+	{
+		if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+		{
+			if (pWKEWebkitCtrl_->CanGoBack(pTag->nID_) != FALSE)
+			{
+				pGoBackCtrl_->SetEnabled(true);
+			}
+			else
+			{
+				pGoBackCtrl_->SetEnabled(false);
+			}
+
+
+			if (pWKEWebkitCtrl_->CanGoForward(pTag->nID_) != FALSE)
+			{
+
+				pGoForwardCtrl_->SetEnabled(true);
+			}
+			else
+			{
+				pGoForwardCtrl_->SetEnabled(false);
+			}
+		}
+	}
+
+	
 }

@@ -31,6 +31,12 @@ namespace DuiLib
 		void ReLoad(int nWebBrowserID);
 		void LoadURL(int nWebBrowserID, CefString& strURL);
 		CefString GetFinalURL(int nWebBrowserID);
+
+		BOOL CanGoForward(int nWebBrowserID) ;
+		void GoForward(int nWebBrowserID);
+		BOOL CanGoBack(int nWebBrowserID);
+		void GoBack(int nWebBrowserID);
+
 		int GetHitIndex() const;
 		void SetHitIndex(int idx);
 	public:
@@ -47,7 +53,7 @@ namespace DuiLib
 
 		HWND hWebKitBrowserWnd_;
 		//std::vector<std::wstring> strURLs_;
-		CefRefPtr<CCefClientHandler>  clientHandler_;
+		CefRefPtr<CCefClientHandler>  clientHandler_; //CefClient实现，用于处理Browser实例相关的回调
 		int nHitIndex_;
 
 	};

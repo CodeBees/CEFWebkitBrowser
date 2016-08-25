@@ -23,9 +23,9 @@
                 <Control width="4" height="28" />
                 <Button name="ui_btn_home" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;home.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;home-push.png&apos; dest=&apos;4,4,28,23&apos;" />
                 <Control width="4" height="28" />
-                <Button name="ui_btn_goback" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_previews.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;previews-push.png&apos; dest=&apos;4,4,28,23&apos;" pushedbkcolor="#FF800080" />
+                <Button name="ui_btn_goback" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_previews.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;previews-push.png&apos; dest=&apos;4,4,28,23&apos;" pushedbkcolor="#FF800080" />
                 <Control width="4" height="28" />
-                <Button name="ui_btn_goforward" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_next.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;next-push.png&apos; dest=&apos;4,4,28,23&apos;" />
+                <Button name="ui_btn_goforward" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_next.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;next-push.png&apos; dest=&apos;4,4,28,23&apos;" />
                 <Control width="4" height="28" />
                 <RichEdit name="ui_et_urlinput" height="27" bkimage="Search-Tab.png" textpadding="4,8,0,0" wantreturn="false" multiline="false" align="left" />
                 <Button name="ui_btn_ensure" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;refresh.png&apos; dest=&apos;6,4,25,23&apos;" pushedimage="file=&apos;refresh-push.png&apos; dest=&apos;6,4,25,23&apos;" />

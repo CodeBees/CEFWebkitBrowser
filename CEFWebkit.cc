@@ -277,6 +277,75 @@ namespace DuiLib
 
 	}
 
+	BOOL CCEFWebkitUI::CanGoForward(int nWebBrowserID)
+	{
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				
+				return it->get()->CanGoForward();
+			}
+		}
+
+		return FALSE;
+	}
+
+	void CCEFWebkitUI::GoForward(int nWebBrowserID)
+	{
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+
+				if (it->get()->CanGoForward()!=false)
+				{
+					it->get()->GoForward();
+				}
+
+			}
+		}
+
+	}
+
+
+	BOOL CCEFWebkitUI::CanGoBack(int nWebBrowserID)
+	{
+
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				
+				return it->get()->CanGoBack();
+			}
+		}
+		return FALSE;
+	}
+
+	void CCEFWebkitUI::GoBack(int nWebBrowserID)
+	{
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				if (it->get()->CanGoBack())
+				{
+					it->get()->GoBack();
+				}
+				
+			}
+		}
+
+	}
+
+	
 	int CCEFWebkitUI::GetHitIndex() const
 	{
 		return nHitIndex_;

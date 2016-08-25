@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "CEFWebkitBrowser.h"
 #include "clientapp.h"
+#include <Shlobj.h>
+#include <strsafe.h>
 
 //记得拷贝resource中的资源到运行目录
 
@@ -33,10 +35,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Provide CEF with command-line arguments.
 	CefMainArgs main_args(hInstance);
 
+	// SimpleApp implements application-level callbacks for the browser process.
+	// It will create the first browser instance in OnContextInitialized() after
+	// CEF has initialized.
+	CefRefPtr<CCefClientApp> app(new CCefClientApp); //CefApp实现，用于处理进程相关的回调。
+
+
 	// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
 	// that share the same executable. This function checks the command-line and,
 	// if this is a sub-process, executes the appropriate logic.
-	int exit_code = CefExecuteProcess(main_args, NULL, sandbox_info);
+	int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
 	if (exit_code >= 0) {
 		// The sub-process has completed so return here.
 		return exit_code;
@@ -49,7 +57,17 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
 //	settings.command_line_args_disabled = true;
 //	CefString(&settings.locale).FromASCII("zh-CN");
-
+	TCHAR szSpecialPath[MAX_PATH];
+	memset(szSpecialPath, '\0', sizeof(szSpecialPath));
+	//	GetEnvironmentVariable("",szSpecialPath,sizeof())
+	
+	if (FALSE!= SHGetSpecialFolderPath(NULL, szSpecialPath, CSIDL_PROFILE, FALSE))
+	{
+		StringCbCat(szSpecialPath,sizeof(szSpecialPath),_T("\\AppData\\Local\\Temp\\CEF"));
+		CefString(&settings.cache_path).FromString(szSpecialPath,sizeof(szSpecialPath)/2,true);
+	}
+	
+	
 
 #if !defined(CEF_USE_SANDBOX)
 	settings.no_sandbox = true;
@@ -59,10 +77,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	settings.multi_threaded_message_loop = true;
 
 
-	// SimpleApp implements application-level callbacks for the browser process.
-	// It will create the first browser instance in OnContextInitialized() after
-	// CEF has initialized.
-	CefRefPtr<CCefClientApp> app(new CCefClientApp);
+
 
 	// Initialize CEF.
 	CefInitialize(main_args, settings, app, sandbox_info);

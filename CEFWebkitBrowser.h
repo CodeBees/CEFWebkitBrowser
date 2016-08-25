@@ -36,6 +36,8 @@ public:
 	void OnWebLoadStart(WPARAM wParam, LPARAM lParam);
 	COptionUI* GetActiveOption() const;
 
+	void SwitchUIState();
+
 public:
     static CEFWebkitBrowserWnd* pCEFWebkitBrowserWnd;
     
@@ -46,6 +48,8 @@ private:
     CRichEditUI*        pURLEditCtrl_;
 	CLabelUI*			pWebStateCtrl_;
 	CHorizontalLayoutUI* pWebTabContainer_;
+	CButtonUI*				pGoBackCtrl_;			
+	CButtonUI*				pGoForwardCtrl_;		
 
 	class COptionTag
 	{

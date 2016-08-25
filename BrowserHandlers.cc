@@ -80,7 +80,7 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 {
 	//TID_UI 线程是浏览器的主线程。
 	CEF_REQUIRE_UI_THREAD();
-	AutoLock lock_scope(this);
+//	AutoLock lock_scope(this);
 
 	lock_.Acquire();
 
@@ -106,7 +106,8 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 	if (browser_list_.size() == 0) {
 		// Set a flag to indicate that the window close should be allowed.
 		is_closing_ = true;
-		CefQuitMessageLoop();
+	
+		::PostMessage(hWnd_, UM_CEF_POSTQUITMESSAGE, 0, 0);
 	}
 
 	
@@ -137,7 +138,7 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	if (browser_list_.empty()) 
 	{
 		is_closing_ = true;
-		CefQuitMessageLoop();
+		::PostMessage(hWnd_, UM_CEF_POSTQUITMESSAGE, 0, 0);
 		// All browser windows have closed. Quit the application message loop.
 		//CefQuitMessageLoop();
 		//PostQuitMessage(0l);
@@ -270,12 +271,12 @@ void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool forc
 
 void CCefClientHandler::CloseAllBrowsers(bool force_close)
 {
-	if (!CefCurrentlyOn(TID_UI))
-	{
-		// Execute on the UI thread.
-		CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseAllBrowsers, this, force_close));
-		return;
-	}
+	//if (!CefCurrentlyOn(TID_UI))
+	//{
+	//	// Execute on the UI thread.
+	//	CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseAllBrowsers, this, force_close));
+	//	return;
+	//}
 
 
 
