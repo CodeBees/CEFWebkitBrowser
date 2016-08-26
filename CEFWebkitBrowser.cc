@@ -7,6 +7,8 @@
 #include "CEFWebkitBrowser.h"
 #include <strsafe.h>
 
+
+#define 	E_GOFORWORD_TIMER  100
 CEFWebkitBrowserWnd* CEFWebkitBrowserWnd::pCEFWebkitBrowserWnd = NULL;
 
 
@@ -91,7 +93,7 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 			{
 				pWKEWebkitCtrl_->ReFresh(pTag->nID_);
 				pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pTag->nID_).c_str());
-				SwitchUIState();
+				
 			}
 
 		}
@@ -123,6 +125,9 @@ void CEFWebkitBrowserWnd::InitWindow()
 		MessageBox(GetSafeHwnd(), _T("控件初始化失败，检查界面"), _T("Err"), MB_OK);
 		PostQuitMessage(0);
 	}
+
+	
+
 
 }
 
@@ -228,7 +233,14 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 	}
 	else if (msg.sType== DUI_MSGTYPE_TIMER)
 	{
+			if (msg.pSender== pWKEWebkitCtrl_)
+			{
+				if (msg.wParam == E_GOFORWORD_TIMER)
+				{
+					SwitchUIState();
+				}
 
+			}
 	
 	}
 
@@ -303,12 +315,17 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 	return 0;
 }
 
+
+ 
 void CEFWebkitBrowserWnd::OnInitComplate()
 {
 	if (pWKEWebkitCtrl_)
 	{
 		pWKEWebkitCtrl_->NewPage(_T("about:blank"));
 	}
+
+	GetPaintManager()->SetTimer(pWKEWebkitCtrl_, E_GOFORWORD_TIMER, 1000);
+
 }
 
 
@@ -414,7 +431,7 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 					pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
 					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
 					pShilfOption->Selected(true);
-					SwitchUIState();
+					
 				}
 
 			}
