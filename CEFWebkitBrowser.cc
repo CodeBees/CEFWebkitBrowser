@@ -14,6 +14,7 @@ CEFWebkitBrowserWnd* CEFWebkitBrowserWnd::pCEFWebkitBrowserWnd = NULL;
 CEFWebkitBrowserWnd::CEFWebkitBrowserWnd()
 {
 	pURLEditCtrl_ = NULL;
+	pSearchEditCtrl_ = NULL;
 	pWebStateCtrl_ = NULL;
 	pWKEWebkitCtrl_ = NULL;
 	pWebTabContainer_ = NULL;
@@ -103,34 +104,7 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 		}
 
 	}
-	else if (_T("ui_btn_goforward") == strName)
-	{
-		COptionUI* pCurrentOpt = NULL;
-		COptionTag* pTag = NULL;
 
-		if (pCurrentOpt = GetActiveOption())
-		{
-			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
-			{
-				
-				pWKEWebkitCtrl_->GoForward(pTag->nID_);
-			}
-		}
-	}
-	else if (_T("ui_btn_goback") == strName)
-	{
-		COptionUI* pCurrentOpt = NULL;
-		COptionTag* pTag = NULL;
-
-		if (pCurrentOpt = GetActiveOption())
-		{
-			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
-			{
-
-				pWKEWebkitCtrl_->GoBack(pTag->nID_);
-			}
-		}
-	}
 
 }
 
@@ -139,33 +113,59 @@ void CEFWebkitBrowserWnd::InitWindow()
 {
 	pWebStateCtrl_ = dynamic_cast<CLabelUI*>(FindControl(_T("ui_lbl_status")));
 	pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_urlinput")));
+	pSearchEditCtrl_= dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_search")));
 	pWebTabContainer_ = dynamic_cast<CHorizontalLayoutUI*>(FindControl(_T("ui_hl_urltabs")));
 	pGoBackCtrl_ = dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goback")));
 	pGoForwardCtrl_= dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goforward")));;
 
+	if ((!pWebStateCtrl_)||(!pURLEditCtrl_)||(!pWebTabContainer_)||(!pGoBackCtrl_)||(!pGoForwardCtrl_)||(!pSearchEditCtrl_))
+	{
+		MessageBox(GetSafeHwnd(), _T("控件初始化失败，检查界面"), _T("Err"), MB_OK);
+		PostQuitMessage(0);
+	}
 
 }
 
 
 void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 {
-	if (msg.sType == _T("click"))
+	if (msg.sType == DUI_MSGTYPE_CLICK)
 	{
 		if (msg.pSender->GetName() == _T("ui_btn_goback"))
 		{
+			COptionUI* pCurrentOpt = NULL;
+			COptionTag* pTag = NULL;
 
+			if (pCurrentOpt = GetActiveOption())
+			{
+				if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+				{
+
+					pWKEWebkitCtrl_->GoBack(pTag->nID_);
+				}
+			}
 		}
 		else if (msg.pSender->GetName() == _T("ui_btn_goforward"))
 		{
+			COptionUI* pCurrentOpt = NULL;
+			COptionTag* pTag = NULL;
 
+			if (pCurrentOpt = GetActiveOption())
+			{
+				if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+				{
+
+					pWKEWebkitCtrl_->GoForward(pTag->nID_);
+				}
+			}
 		}
-		else if (msg.pSender->GetName() == _T("ui_btn_ensure"))
+		else if (msg.pSender->GetName() == _T("ui_btn_refresh"))
 		{
-
+			pWKEWebkitCtrl_->ReFresh();
 		}
 		else if (msg.pSender->GetName() == _T("ui_btn_home"))
 		{
-
+			pWKEWebkitCtrl_->NewPage("www.baidu.com");
 		}
 		else if (msg.pSender->GetName() == _T("ui_btn_newpage"))
 		{
@@ -211,11 +211,28 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 
 			}
 		}
+		else if (pSearchEditCtrl_==msg.pSender)
+		{
+			if (!pSearchEditCtrl_->GetText().IsEmpty())
+			{
+				CDuiString sUrl;
+				sUrl.Format(_T("https://www.baidu.com/s?ie=utf-8&wd=%s"), pSearchEditCtrl_->GetText().GetData());
+				pWKEWebkitCtrl_->NewPage(sUrl.GetData());
+			}
+
+		}
 	}
 	else if (msg.sType == _T("windowinit"))
 	{
 		OnInitComplate();
 	}
+	else if (msg.sType== DUI_MSGTYPE_TIMER)
+	{
+
+	
+	}
+
+
 	__super::Notify(msg);
 }
 
@@ -290,7 +307,7 @@ void CEFWebkitBrowserWnd::OnInitComplate()
 {
 	if (pWKEWebkitCtrl_)
 	{
-		pWKEWebkitCtrl_->NewPage(_T("www.baidu.com"));
+		pWKEWebkitCtrl_->NewPage(_T("about:blank"));
 	}
 }
 
