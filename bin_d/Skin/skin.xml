@@ -31,7 +31,7 @@
                 <Control width="4" height="28" />
                 <RichEdit name="ui_et_urlinput" height="27" bkimage="URL-Tab.png" textpadding="4,8,0,0" wantreturn="false" multiline="false" align="left" />
                 <Control width="4" height="28" />
-                <RichEdit name="ui_et_search" width="142" height="27" bkimage="Search-Tab.png" textpadding="4,8,0,0" wantreturn="false" multiline="false" align="left" />
+                <Edit name="ui_et_search" tooltip="搜索" width="142" height="27" bkimage="Search-Tab.png" bkcolor="#FFFFFFFF" textpadding="4,8,0,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="left" valign="center" nativebkcolor="#FFC0C0C0" />
                 <Control width="4" height="28" />
             </HorizontalLayout>
             <Control />

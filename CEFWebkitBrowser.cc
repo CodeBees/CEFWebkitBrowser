@@ -115,7 +115,7 @@ void CEFWebkitBrowserWnd::InitWindow()
 {
 	pWebStateCtrl_ = dynamic_cast<CLabelUI*>(FindControl(_T("ui_lbl_status")));
 	pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_urlinput")));
-	pSearchEditCtrl_= dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_search")));
+	pSearchEditCtrl_= dynamic_cast<CEditUI*>(FindControl(_T("ui_et_search")));
 	pWebTabContainer_ = dynamic_cast<CHorizontalLayoutUI*>(FindControl(_T("ui_hl_urltabs")));
 	pGoBackCtrl_ = dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goback")));
 	pGoForwardCtrl_= dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goforward")));;
@@ -125,9 +125,6 @@ void CEFWebkitBrowserWnd::InitWindow()
 		MessageBox(GetSafeHwnd(), _T("控件初始化失败，检查界面"), _T("Err"), MB_OK);
 		PostQuitMessage(0);
 	}
-
-	
-
 
 }
 
@@ -166,7 +163,17 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 		}
 		else if (msg.pSender->GetName() == _T("ui_btn_refresh"))
 		{
-			pWKEWebkitCtrl_->ReFresh();
+			COptionUI* pCurrentOpt = NULL;
+			COptionTag* pTag = NULL;
+
+			if (pCurrentOpt = GetActiveOption())
+			{
+				if (pTag = (COptionTag*)pCurrentOpt->GetTag())
+				{
+					pWKEWebkitCtrl_->ReLoad(pTag->nID_);
+				}
+			}
+
 		}
 		else if (msg.pSender->GetName() == _T("ui_btn_home"))
 		{

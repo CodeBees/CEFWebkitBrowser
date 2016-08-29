@@ -45,10 +45,10 @@ public:
     wstring strTitle_;
     CCEFWebkitUI* pWKEWebkitCtrl_; 
 private:
-	CRichEditUI*        pURLEditCtrl_;
-	CRichEditUI*        pSearchEditCtrl_;
-	CLabelUI*			pWebStateCtrl_;
-	CHorizontalLayoutUI* pWebTabContainer_;
+	CRichEditUI*			pURLEditCtrl_;
+	CEditUI*				pSearchEditCtrl_;
+	CLabelUI*				pWebStateCtrl_;
+	CHorizontalLayoutUI*	pWebTabContainer_;
 	CButtonUI*				pGoBackCtrl_;			
 	CButtonUI*				pGoForwardCtrl_;		
 
