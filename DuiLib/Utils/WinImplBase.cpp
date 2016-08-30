@@ -389,7 +389,7 @@ namespace DuiLib
 		}
 		else
 			pRoot = builder.Create(GetSkinFile().GetData(), (UINT)0, this, &m_PaintManager);
-		ASSERT(pRoot&&"Load Resouse fail ,check fold and path ,or err in file");
+		//ASSERT(pRoot&&"Load Resouse fail ,check fold and path ,or err in file");
 		if (pRoot==NULL)
 		{
 			CDuiString sError = _T("加载资源文件失败：");

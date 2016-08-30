@@ -328,8 +328,8 @@ void CEFWebkitBrowserWnd::OnInitComplate()
 {
 	if (pWKEWebkitCtrl_)
 	{
-		//pWKEWebkitCtrl_->NewPage(_T("about:blank"));
-		pWKEWebkitCtrl_->NewPage(_T("file:///htmlexample/index.html"));
+		pWKEWebkitCtrl_->NewPage(_T("about:blank"));
+		//pWKEWebkitCtrl_->NewPage(_T("file:///htmlexample/index.html"));
 	}
 
 	GetPaintManager()->SetTimer(pWKEWebkitCtrl_, E_GOFORWORD_TIMER, 1000);
