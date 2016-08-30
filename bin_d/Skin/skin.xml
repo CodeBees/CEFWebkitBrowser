@@ -2,7 +2,7 @@
 <Window size="1200,800" sizebox="8,0,8,8" caption="0,0,0,50" mininfo="288,50">
     <Default name="OptionEx" value="bordersize=&quot;0&quot; float=&quot;f&quot; align=&quot;center&quot; normalimage=&quot;file=&apos;TabBtnBk.png&apos; source=&apos;0,0,87,30&apos; corner=&apos;15,15,15,15&apos;&quot; hotimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;15,15,15,15&apos; source=&apos;87,0,174,30&apos;&quot; selectedimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;15,15,15,15&apos; source=&apos;174,0,261,30&apos;&quot;" />
     <Default name="OptionEx2" value="bordersize=&quot;0&quot; float=&quot;f&quot; align=&quot;center&quot; normalimage=&quot;file=&apos;TabBtnBk.png&apos; source=&apos;0,0,87,30&apos; corner=&apos;2,1,2,1&apos;&quot; hotimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;2,1,2,1&apos; source=&apos;87,0,174,30&apos;&quot; selectedimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;2,1,2,1&apos; source=&apos;174,0,261,30&apos;&quot;" />
-    <VerticalLayout name="framework" bkcolor="#FFFFFBF0">
+    <VerticalLayout name="framework" bkcolor="#FFFFFFFF">
         <HorizontalLayout name="title" height="27" bkcolor="#FF808080">
             <VerticalLayout inset="10,4,0,0">
                 <Label text="CEF Browser" width="478" height="18" textcolor="#00FFFFFF" disabledtextcolor="#FFA7A6AA" align="center" valign="center" />
@@ -23,15 +23,15 @@
                 <Control width="4" height="28" />
                 <Button name="ui_btn_home" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;home.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;home-push.png&apos; dest=&apos;4,4,28,23&apos;" />
                 <Control width="4" height="28" />
-                <Button name="ui_btn_goback" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_previews.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;previews-push.png&apos; dest=&apos;4,4,28,23&apos;" pushedbkcolor="#FF800080" />
+                <Button name="ui_btn_goback" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_previews.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;previews-push.png&apos; dest=&apos;4,4,28,23&apos;" disabledimage="file=&apos;CB_previews-disable.png&apos; dest=&apos;4,4,28,23&apos;" pushedbkcolor="#FF800080" />
                 <Control width="4" height="28" />
-                <Button name="ui_btn_goforward" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_next.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;next-push.png&apos; dest=&apos;4,4,28,23&apos;" />
+                <Button name="ui_btn_goforward" width="32" height="27" enabled="false" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;CB_next.png&apos; dest=&apos;4,4,28,23&apos;" pushedimage="file=&apos;next-push.png&apos; dest=&apos;4,4,28,23&apos;" disabledimage="file=&apos;CB_next -disable.png&apos; dest=&apos;4,4,28,23&apos;" />
                 <Control width="4" height="28" />
                 <Button name="ui_btn_refresh" width="32" height="27" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;refresh.png&apos; dest=&apos;6,4,25,23&apos;" pushedimage="file=&apos;refresh-push.png&apos; dest=&apos;6,4,25,23&apos;" />
                 <Control width="4" height="28" />
                 <RichEdit name="ui_et_urlinput" height="27" bkimage="URL-Tab.png" textpadding="4,8,0,0" wantreturn="false" multiline="false" align="left" />
                 <Control width="4" height="28" />
-                <Edit name="ui_et_search" tooltip="搜索" width="142" height="27" bkimage="Search-Tab.png" bkcolor="#FFFFFFFF" textpadding="4,8,0,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="left" valign="center" nativebkcolor="#FFC0C0C0" />
+                <Edit name="ui_et_search" tooltip="搜索" width="142" height="27" bkimage="Search-Tab.png" bkcolor="#FFD8D8D8" textpadding="4,4,0,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="left" valign="center" nativebkcolor="#FFD8D8D8" />
                 <Control width="4" height="28" />
             </HorizontalLayout>
             <Control />
