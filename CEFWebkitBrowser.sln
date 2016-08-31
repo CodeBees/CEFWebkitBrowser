@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEFWebkitBrowser", "CEFWebk
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DuiLib", "DuiLib\DuiLib.vcxproj", "{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HookFlash", "HookFlash\HookFlash.vcxproj", "{CAF87436-915F-4088-BDDC-8BDAA08006D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		UnicodeDebug|x86 = UnicodeDebug|x86
@@ -21,6 +23,10 @@ Global
 		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.UnicodeDebug|x86.Build.0 = UnicodeDebug|Win32
 		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.UnicodeRelease|x86.ActiveCfg = UnicodeRelease|Win32
 		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}.UnicodeRelease|x86.Build.0 = UnicodeRelease|Win32
+		{CAF87436-915F-4088-BDDC-8BDAA08006D9}.UnicodeDebug|x86.ActiveCfg = Debug|Win32
+		{CAF87436-915F-4088-BDDC-8BDAA08006D9}.UnicodeDebug|x86.Build.0 = Debug|Win32
+		{CAF87436-915F-4088-BDDC-8BDAA08006D9}.UnicodeRelease|x86.ActiveCfg = Release|Win32
+		{CAF87436-915F-4088-BDDC-8BDAA08006D9}.UnicodeRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

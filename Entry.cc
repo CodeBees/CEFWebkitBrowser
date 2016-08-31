@@ -1,24 +1,29 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CEFWebkitBrowser.h"
 #include "clientapp.h"
 #include <Shlobj.h>
 #include <strsafe.h>
 
-//¼ÇµÃ¿½±´resourceÖĞµÄ×ÊÔ´µ½ÔËĞĞÄ¿Â¼
+//è®°å¾—æ‹·è´resourceä¸­çš„èµ„æºåˆ°è¿è¡Œç›®å½•
 
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
-	//ÊµÀı¾ä±úÓëäÖÈ¾Àà¹ØÁª
+	//å®ä¾‹å¥æŸ„ä¸æ¸²æŸ“ç±»å…³è”
 	CPaintManagerUI::SetInstance(hInstance);
 
-	//Initializes the COM library on the current thread and identifies,³õÊ¼»¯COM¿â, Îª¼ÓÔØCOM¿âÌá¹©Ö§³Ö
+	//Initializes the COM library on the current thread and identifies,åˆå§‹åŒ–COMåº“, ä¸ºåŠ è½½COMåº“æä¾›æ”¯æŒ
 	HRESULT Hr = ::CoInitialize(NULL);
 	if (FAILED(Hr))
 	{
 		return 0;
 	}
+
+	//
+
+	HMODULE hModule = LoadLibrary(_T("HookFlash.dll"));
+
 
 	cef_enable_highdpi_support();
 
@@ -38,7 +43,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// SimpleApp implements application-level callbacks for the browser process.
 	// It will create the first browser instance in OnContextInitialized() after
 	// CEF has initialized.
-	CefRefPtr<CCefClientApp> app(new CCefClientApp); //CefAppÊµÏÖ£¬ÓÃÓÚ´¦Àí½ø³ÌÏà¹ØµÄ»Øµ÷¡£
+	CefRefPtr<CCefClientApp> app(new CCefClientApp); //CefAppå®ç°ï¼Œç”¨äºå¤„ç†è¿›ç¨‹ç›¸å…³çš„å›è°ƒã€‚
 
 
 	// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
@@ -53,8 +58,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Specify CEF global settings here.
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
-//	settings.single_process = true;                //Ê¹ÓÃ¶à½ø³ÌÄ£Ê½
-	settings.ignore_certificate_errors = true;      //ºöÂÔµôsslÖ¤ÊéÑéÖ¤´íÎó
+//	settings.single_process = true;                //ä½¿ç”¨å¤šè¿›ç¨‹æ¨¡å¼
+	settings.ignore_certificate_errors = true;      //å¿½ç•¥æ‰sslè¯ä¹¦éªŒè¯é”™è¯¯
 	settings.log_severity = LOGSEVERITY_ERROR;
 //	settings.command_line_args_disabled = true;
 //	CefString(&settings.locale).FromASCII("zh-CN");
@@ -74,21 +79,43 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	settings.no_sandbox = true;
 #endif
 
-	//multi_threaded_message_loop=true ÕâÑùÉèÖÃµÄÄ¿µÄÊÇÊ¹cefµÄbrowser uiÏß³ÌºÍ³ÌĞòµÄÏß³Ì·ÖÀë£¬Ê¹ÓÃduilibµÄÏûÏ¢Ñ­»·º¯Êı
+	//multi_threaded_message_loop=true è¿™æ ·è®¾ç½®çš„ç›®çš„æ˜¯ä½¿cefçš„browser uiçº¿ç¨‹å’Œç¨‹åºçš„çº¿ç¨‹åˆ†ç¦»ï¼Œä½¿ç”¨duilibçš„æ¶ˆæ¯å¾ªç¯å‡½æ•°
 	settings.multi_threaded_message_loop = true;
 
-
-
+	
 
 	// Initialize CEF.
 	CefInitialize(main_args, settings, app, sandbox_info);
 
+	//////////////////////////////hook test////////////////////////////////////////////
+
+	/*
+	PROCESS_INFORMATION   p;
+	STARTUPINFO   startupInfo = { 0 };
+	startupInfo.cb = sizeof(STARTUPINFO);
+	startupInfo.lpReserved = NULL;
+	startupInfo.lpReserved2 = NULL;
+	startupInfo.lpDesktop = NULL;
+	startupInfo.dwFlags = 0;
+	BOOL   res = CreateProcess(L"C:\\WINNT\\system32\\CMD.exe",L"ping 192.168.1.6",    
+		NULL,
+		NULL,
+		TRUE,
+		NORMAL_PRIORITY_CLASS|CREATE_NO_WINDOW,
+		NULL,
+		NULL,
+		&startupInfo,
+		&p);
+	*/
+
+	//////////////////////////////////////////////////////////////////////////
+
 	
 	CEFWebkitBrowserWnd pFrame;
-	pFrame.Create(NULL, _T("ä¯ÀÀÆ÷"), UI_WNDSTYLE_FRAME | WS_CLIPCHILDREN, WS_EX_ACCEPTFILES);
+	pFrame.Create(NULL, _T("æµè§ˆå™¨"), UI_WNDSTYLE_FRAME | WS_CLIPCHILDREN, WS_EX_ACCEPTFILES);
 	pFrame.CenterWindow();
 
-	//	»æÖÆÒõÓ°
+	//	ç»˜åˆ¶é˜´å½±
 
 	CShadowWindow shadowwnd;
 	CShadowWindow::Initialize(hInstance);
@@ -115,7 +142,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 	CefShutdown();
 
-	//ÍË³ö³ÌĞò²¢ÊÍ·ÅCOM¿â
+	//é€€å‡ºç¨‹åºå¹¶é‡Šæ”¾COMåº“
 	::CoUninitialize();
 
 	return 0;
