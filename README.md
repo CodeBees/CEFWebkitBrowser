@@ -8,5 +8,7 @@
 CEF用的是 https://cefbuilds.com/ 下载的编译好的版本，现在采用的是Branch 2704-Windows 32bit，下载后拷贝到CEF文件夹即可，
 详看http://blog.csdn.net/x356982611/article/details/52174234
 
+这个里面收集了一些CEF的文档和资料，可以参考学习
+https://github.com/fanfeilong/cefutil
 
 ![image](https://github.com/CodeBees/CEFWebkitBrowser/blob/master/show.png)
