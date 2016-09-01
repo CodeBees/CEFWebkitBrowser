@@ -3,6 +3,7 @@
 
 CCefClientApp::CCefClientApp()
 {
+	v8Handler_ = new CCEFV8HandlerEx;
 
 }
 
@@ -24,5 +25,18 @@ void CCefClientApp::OnBeforeCommandLineProcessing(const CefString & process_type
 
 void CCefClientApp::OnContextInitialized()
 {
-	
+	std::string app_code =
+		"var app;"
+		"if (!app)"
+		"    app = {};"
+		"(function() {"
+		"    app.jsInvokeCPlusPlus = function(v1,v2) {"
+		"        native function jsInvokeCPlusPlus();"
+		"        return jsInvokeCPlusPlus(v1,v2);"
+		"    };"
+		"})();";
+
+	CefRegisterExtension("v8/app", app_code, v8Handler_);
+
 }
+

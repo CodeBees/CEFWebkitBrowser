@@ -36,6 +36,7 @@ namespace DuiLib
 		void GoForward(int nWebBrowserID);
 		BOOL CanGoBack(int nWebBrowserID);
 		void GoBack(int nWebBrowserID);
+		CefRefPtr<CefBrowser> GetBrowserByID(int nWebBrowserID);
 
 		int GetHitIndex() const;
 		void SetHitIndex(int idx);

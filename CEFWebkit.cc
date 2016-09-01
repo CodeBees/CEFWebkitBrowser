@@ -344,7 +344,20 @@ namespace DuiLib
 		}
 
 	}
+	CefRefPtr<CefBrowser> CCEFWebkitUI::GetBrowserByID(int nWebBrowserID)
+	{
 
+		for (auto it = clientHandler_->browser_list_.begin(); it != clientHandler_->browser_list_.end(); it++)
+		{
+
+			if (nWebBrowserID == it->get()->GetIdentifier())
+			{
+				return it->get();
+			}
+		}
+
+		return nullptr;
+	}
 	
 	int CCEFWebkitUI::GetHitIndex() const
 	{

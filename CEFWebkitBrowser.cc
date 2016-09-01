@@ -328,8 +328,8 @@ void CEFWebkitBrowserWnd::OnInitComplate()
 {
 	if (pWKEWebkitCtrl_)
 	{
-		pWKEWebkitCtrl_->NewPage(_T("about:blank"));
-		//pWKEWebkitCtrl_->NewPage(_T("file:///htmlexample/index.html"));
+		//pWKEWebkitCtrl_->NewPage(_T("about:blank"));
+		pWKEWebkitCtrl_->NewPage(_T("file:///htmlexample/index.html"));
 	}
 
 	GetPaintManager()->SetTimer(pWKEWebkitCtrl_, E_GOFORWORD_TIMER, 1000);
@@ -478,6 +478,14 @@ void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
+	//执行js测试
+	CefRefPtr<CefBrowser> pBrower = pWKEWebkitCtrl_->GetBrowserByID(nBrowserID);
+	if (pBrower)
+	{
+		pBrower->GetMainFrame().get()->ExecuteJavaScript("alert('ExecuteJavaScript succeed!');", pBrower->GetMainFrame().get()->GetURL(), 0);
+	}
+	
+
 	memset(szBuf, '\0', sizeof(szBuf));
 	CefString* pStrComplateURL = (CefString*)lParam;
 	if (pStrComplateURL != NULL)
@@ -499,7 +507,7 @@ void CEFWebkitBrowserWnd::OnWebLoadStart(WPARAM wParam, LPARAM lParam)
 		StringCbPrintf(szBuf, sizeof(szBuf), _T("正在加载:%s"), pStrComplateURL->c_str());
 		delete pStrComplateURL;
 	}
-
+	
 	pWebStateCtrl_->SetText(szBuf);
 
 }

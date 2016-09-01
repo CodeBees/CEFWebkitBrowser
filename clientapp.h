@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "CEFV8HandlerEx.h"
 
 class CCefClientApp : public CefApp, public CefBrowserProcessHandler
 {
@@ -9,7 +10,7 @@ public:
 	~CCefClientApp();
 
 	// CefApp methods:
-	virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override 
+	virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override
 	{
 		return this;
 	}
@@ -20,6 +21,7 @@ public:
 	virtual void OnContextInitialized() override;
 
 private:
+	CefRefPtr<CCEFV8HandlerEx> v8Handler_;
 	// Include the default reference counting implementation.
 	IMPLEMENT_REFCOUNTING(CCefClientApp);
 

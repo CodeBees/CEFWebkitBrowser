@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BrowserHandlers.h" />
+    <ClInclude Include="CEFV8HandlerEx.h" />
     <ClInclude Include="CEFWebkit.h" />
     <ClInclude Include="CEFWebkitBrowser.h" />
     <ClInclude Include="clientapp.h" />
@@ -102,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BrowserHandlers.cc" />
+    <ClCompile Include="CEFV8HandlerEx.cc" />
     <ClCompile Include="CEFWebkit.cc" />
     <ClCompile Include="CEFWebkitBrowser.cc" />
     <ClCompile Include="clientapp.cc" />
