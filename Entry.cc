@@ -58,7 +58,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	// Specify CEF global settings here.
 	CefSettings settings;
 	CefSettingsTraits::init(&settings);
-//	settings.single_process = true;                //使用多进程模式
+	settings.single_process = true;                //使用多进程模式
 	settings.ignore_certificate_errors = true;      //忽略掉ssl证书验证错误
 	settings.log_severity = LOGSEVERITY_ERROR;
 //	settings.command_line_args_disabled = true;

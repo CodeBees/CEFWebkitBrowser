@@ -70,7 +70,7 @@ void CCefClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 	browser_list_.push_back(browser);
 
 	int nID = browser->GetIdentifier();
-
+	
 	::PostMessage(hWnd_, UM_CEF_AFTERCREATED, nID, 0);
 
 }
@@ -212,8 +212,14 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 }
 
-#define MENU_ID_USER_OPENLINK  MENU_ID_USER_FIRST+200
-#define MENU_ID_USER_COPYLINK  MENU_ID_USER_FIRST+201
+
+enum MyEnum
+{
+	MENU_ID_USER_OPENLINK = MENU_ID_USER_FIRST + 200,
+	MENU_ID_USER_COPYLINK,
+	MENU_ID_USER_SHOWDEVTOOLS,
+};
+
 
 void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
 {
@@ -237,13 +243,15 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 
 		model->SetLabel(MENU_ID_BACK, L"后退");
 		model->SetLabel(MENU_ID_FORWARD, L"前进");
-		model->SetLabel(MENU_ID_VIEW_SOURCE, L"查看源代码");
-		model->SetLabel(MENU_ID_PRINT, L"打印");
+		model->AddSeparator();
 		model->AddItem(MENU_ID_RELOAD, L"刷新");
 		model->AddItem(MENU_ID_RELOAD_NOCACHE, L"强制刷新");
 		model->AddItem(MENU_ID_STOPLOAD, L"停止加载");
-		model->SetLabel(MENU_ID_REDO, L"重复");
-
+		
+		model->AddSeparator();
+		model->SetLabel(MENU_ID_PRINT, L"打印");
+		model->SetLabel(MENU_ID_VIEW_SOURCE, L"查看源代码");
+		model->AddItem(MENU_ID_USER_SHOWDEVTOOLS, L"开发者工具"); //"&Show DevTools");						  
 
 	}
 	if (flag & CM_TYPEFLAG_EDITABLE)
@@ -278,7 +286,6 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);
 		break;
 	case MENU_ID_USER_COPYLINK:
-
 
 		if (!OpenClipboard(frame->GetBrowser().get()->GetHost().get()->GetWindowHandle()))
 		{
@@ -318,6 +325,10 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 		CloseClipboard();
 
 		break;
+	case MENU_ID_USER_SHOWDEVTOOLS:
+		ShowDevelopTools(browser, CefPoint());
+		return true;
+
 	default:
 		break;
 	}
@@ -375,3 +386,19 @@ bool CCefClientHandler::IsClosing() const
 }
 
 
+
+void CCefClientHandler::ShowDevelopTools(CefRefPtr<CefBrowser> browser,const CefPoint& inspect_element_at) {CefWindowInfo windowInfo;CefBrowserSettings settings;
+
+#if defined(OS_WIN)
+//windowInfo.SetAsPopup(browser->GetHost()->GetWindowHandle(), "DevTools");
+RECT rc = { 0,0,800,600 };
+	windowInfo.SetAsChild(hWnd_,rc);
+#endif
+
+	browser->GetHost()->ShowDevTools(windowInfo, this, settings,inspect_element_at);
+}
+
+void CCefClientHandler::CloseDevelopTools(CefRefPtr<CefBrowser> browser)
+{
+	browser->GetHost()->CloseDevTools();
+}

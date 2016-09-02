@@ -53,6 +53,10 @@ public:
 
 	bool IsClosing() const;
 
+
+	void ShowDevelopTools(CefRefPtr<CefBrowser> browser,const CefPoint& inspect_element_at);
+	void CloseDevelopTools(CefRefPtr<CefBrowser> browser);
+
 public:
 	//CefRefPtr<CefBrowser> browser_;
 
