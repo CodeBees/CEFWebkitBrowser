@@ -80,7 +80,7 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 {
 	//TID_UI 线程是浏览器的主线程。
 	CEF_REQUIRE_UI_THREAD();
-//	AutoLock lock_scope(this);
+	//	AutoLock lock_scope(this);
 
 	lock_.Acquire();
 
@@ -104,11 +104,11 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 	if (browser_list_.size() == 0) {
 		// Set a flag to indicate that the window close should be allowed.
 		is_closing_ = true;
-	
+
 		::PostMessage(hWnd_, UM_CEF_POSTQUITMESSAGE, 0, 0);
 	}
 
-	
+
 	return false;
 }
 
@@ -118,7 +118,7 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	CEF_REQUIRE_UI_THREAD();
 
 	AutoLock lock_scope(this);
-//	lock_.Acquire();
+	//	lock_.Acquire();
 
 	BrowserList::iterator bit = browser_list_.begin();
 
@@ -133,7 +133,7 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	}
 
 
-	if (browser_list_.empty()) 
+	if (browser_list_.empty())
 	{
 		is_closing_ = true;
 		::PostMessage(hWnd_, UM_CEF_POSTQUITMESSAGE, 0, 0);
@@ -142,7 +142,7 @@ void CCefClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 		//PostQuitMessage(0l);
 	}
 
-//	lock_.Release();
+	//	lock_.Release();
 }
 
 void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
@@ -152,7 +152,7 @@ void CCefClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Cef
 	CefString* strTmpURL = new CefString(browser->GetMainFrame()->GetURL());
 	int nID = browser->GetIdentifier();
 	::PostMessage(hWnd_, UM_CEF_WEBLOADSTART, nID, (LPARAM)strTmpURL);
-	
+
 	//return __super::OnLoadStart(browser, frame);
 }
 void CCefClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
@@ -193,7 +193,7 @@ void CCefClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefSt
 	CEF_REQUIRE_UI_THREAD();
 
 	// globally unique identifier for this browser
-	int nID=browser->GetIdentifier();
+	int nID = browser->GetIdentifier();
 
 	CefString* strTitle = new CefString(title);
 	::PostMessage(hWnd_, UM_CEF_WEBTITLECHANGE, nID, (LPARAM)strTitle);
@@ -215,7 +215,7 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 #define MENU_ID_USER_OPENLINK  MENU_ID_USER_FIRST+200
 #define MENU_ID_USER_COPYLINK  MENU_ID_USER_FIRST+201
 
-void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
+void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
 {
 	//在这里，我添加了自己想要的菜单  
 	cef_context_menu_type_flags_t flag = params->GetTypeFlags();
@@ -223,7 +223,7 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 	if (flag&CM_TYPEFLAG_LINK)
 	{
 		model->Clear(); //清除所有菜单项
-		
+
 		model->AddItem(MENU_ID_USER_OPENLINK, L"在新标签页中打开(&T)");//增加菜单项
 		model->AddSeparator(); //加分隔线
 		model->AddItem(MENU_ID_USER_COPYLINK, L"复制链接地址(&C)");//增加菜单项
@@ -234,7 +234,7 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 
 	if (flag & CM_TYPEFLAG_PAGE)
 	{//普通页面的右键消息
-		
+
 		model->SetLabel(MENU_ID_BACK, L"后退");
 		model->SetLabel(MENU_ID_FORWARD, L"前进");
 		model->SetLabel(MENU_ID_VIEW_SOURCE, L"查看源代码");
@@ -243,8 +243,8 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 		model->AddItem(MENU_ID_RELOAD_NOCACHE, L"强制刷新");
 		model->AddItem(MENU_ID_STOPLOAD, L"停止加载");
 		model->SetLabel(MENU_ID_REDO, L"重复");
-	
-		
+
+
 	}
 	if (flag & CM_TYPEFLAG_EDITABLE)
 	{//编辑框的右键消息  
@@ -259,7 +259,7 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 
 }
 
-bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags)
+bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags)
 {
 	//CefString strLinkURL;
 	CefString strURLLink;
@@ -271,14 +271,13 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 
 	switch (command_id)
 	{
-	
+
 	case MENU_ID_USER_OPENLINK:
 
 		strTargetURL = new CefString(params->GetLinkUrl());
-		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);		
+		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);
 		break;
 	case MENU_ID_USER_COPYLINK:
-
 
 
 		if (!OpenClipboard(frame->GetBrowser().get()->GetHost().get()->GetWindowHandle()))
@@ -288,11 +287,9 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 
 		EmptyClipboard();
 
-		// Allocate a global memory object for the text. 
-
 		strURLLink = params->GetUnfilteredLinkUrl();
 
-		if (strURLLink.length()!=0)
+		if (strURLLink.length() != 0)
 		{
 			nBuffLength = (strURLLink.length() + 1) * sizeof(TCHAR);
 
@@ -308,14 +305,14 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 
 			lptstrCopy = (LPTSTR)::GlobalLock(hglbCopy);
 			memset(lptstrCopy, '\0', nBuffLength);
-			memcpy(lptstrCopy, strURLLink.c_str(), nBuffLength- sizeof(TCHAR));
-			
+			memcpy(lptstrCopy, strURLLink.c_str(), nBuffLength - sizeof(TCHAR));
+
 			GlobalUnlock(hglbCopy); // 解除锁定剪贴板
 			// Place the handle on the clipboard. 
 
 			//SetClipboardData(CF_TEXT, hglbCopy);
 			SetClipboardData(CF_UNICODETEXT, hglbCopy);// CF_UNICODETEXT为Unicode编码  
-			
+
 		}
 
 		CloseClipboard();
@@ -337,7 +334,7 @@ void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool forc
 	if (!CefCurrentlyOn(TID_UI))
 	{
 		// Execute on the UI thread.
-		CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseHostBrowser, this,browser, force_close));
+		CefPostTask(TID_UI, base::Bind(&CCefClientHandler::CloseHostBrowser, this, browser, force_close));
 		return;
 	}
 
@@ -345,7 +342,6 @@ void CCefClientHandler::CloseHostBrowser(CefRefPtr<CefBrowser>browser, bool forc
 	int nID = browser->GetIdentifier();
 
 	::PostMessage(hWnd_, UM_CEF_BROWSERCLOSE, nID, 0);
-
 	browser->GetHost()->CloseBrowser(force_close);
 }
 
@@ -359,29 +355,23 @@ void CCefClientHandler::CloseAllBrowsers(bool force_close)
 	//	return;
 	//}
 
-
-
 	lock_.Acquire();
-
-
-	if (browser_list_.empty())
+	if (browser_list_.empty()) {
 		return;
-
+	}
 	BrowserList::const_iterator it = browser_list_.begin();
 	for (; it != browser_list_.end(); ++it)
 	{
 		(*it)->GetHost()->CloseBrowser(force_close);
-		
-	}
 
+	}
 	lock_.Release();
-	
 }
 
 
 bool CCefClientHandler::IsClosing() const
-{ 
-	return is_closing_; 
+{
+	return is_closing_;
 }
 
 

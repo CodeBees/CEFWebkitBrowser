@@ -14,6 +14,9 @@
 <script type="text/javascript" src="src/js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
 <script type="text/javascript" src="src/js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
+<script type="text/javascript">
+alter(jsValue);
+</script>
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -92,7 +95,7 @@
 			'transitionIn'		: 'none',
 			'transitionOut'		: 'none'
 		});
-		
+
 	});
 </script>
 
@@ -103,12 +106,12 @@ $(function(){
     //横向设置
     $('div.albumSlider-h').albumSlider({direction:'h',step:3});
 });
- 
+
 function  ButtonPushed()
 {
-	
-	jsInvokeCPlusPlus("Button clicked ","Second param");
-
+	//alert("文本");
+	alert(jsValue); //c++ 构造的值
+	app.jsInvokeCPlusPlus("Button clicked ","Second param"); //js 调用c++ 
 }
 
 </script>

@@ -11,8 +11,6 @@
 #define 	E_GOFORWORD_TIMER  100
 CEFWebkitBrowserWnd* CEFWebkitBrowserWnd::pCEFWebkitBrowserWnd = NULL;
 
-
-
 CEFWebkitBrowserWnd::CEFWebkitBrowserWnd()
 {
 	pURLEditCtrl_ = NULL;
@@ -93,7 +91,7 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 			{
 				pWKEWebkitCtrl_->ReFresh(pTag->nID_);
 				pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pTag->nID_).c_str());
-				
+
 			}
 
 		}
@@ -115,12 +113,12 @@ void CEFWebkitBrowserWnd::InitWindow()
 {
 	pWebStateCtrl_ = dynamic_cast<CLabelUI*>(FindControl(_T("ui_lbl_status")));
 	pURLEditCtrl_ = dynamic_cast<CRichEditUI*>(FindControl(_T("ui_et_urlinput")));
-	pSearchEditCtrl_= dynamic_cast<CEditUI*>(FindControl(_T("ui_et_search")));
+	pSearchEditCtrl_ = dynamic_cast<CEditUI*>(FindControl(_T("ui_et_search")));
 	pWebTabContainer_ = dynamic_cast<CHorizontalLayoutUI*>(FindControl(_T("ui_hl_urltabs")));
 	pGoBackCtrl_ = dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goback")));
-	pGoForwardCtrl_= dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goforward")));;
+	pGoForwardCtrl_ = dynamic_cast<CButtonUI*>(FindControl(_T("ui_btn_goforward")));;
 
-	if ((!pWebStateCtrl_)||(!pURLEditCtrl_)||(!pWebTabContainer_)||(!pGoBackCtrl_)||(!pGoForwardCtrl_)||(!pSearchEditCtrl_))
+	if ((!pWebStateCtrl_) || (!pURLEditCtrl_) || (!pWebTabContainer_) || (!pGoBackCtrl_) || (!pGoForwardCtrl_) || (!pSearchEditCtrl_))
 	{
 		MessageBox(GetSafeHwnd(), _T("控件初始化失败，检查界面"), _T("Err"), MB_OK);
 		PostQuitMessage(0);
@@ -183,7 +181,7 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 		{
 			if (pWKEWebkitCtrl_)
 			{
-			//	pWKEWebkitCtrl_->NewPage(_T("about:black"));
+				//	pWKEWebkitCtrl_->NewPage(_T("about:black"));
 				pWKEWebkitCtrl_->NewPage(_T("about:blank"));
 			}
 		}
@@ -223,7 +221,7 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 
 			}
 		}
-		else if (pSearchEditCtrl_==msg.pSender)
+		else if (pSearchEditCtrl_ == msg.pSender)
 		{
 			if (!pSearchEditCtrl_->GetText().IsEmpty())
 			{
@@ -238,17 +236,17 @@ void CEFWebkitBrowserWnd::Notify(TNotifyUI& msg)
 	{
 		OnInitComplate();
 	}
-	else if (msg.sType== DUI_MSGTYPE_TIMER)
+	else if (msg.sType == DUI_MSGTYPE_TIMER)
 	{
-			if (msg.pSender== pWKEWebkitCtrl_)
+		if (msg.pSender == pWKEWebkitCtrl_)
+		{
+			if (msg.wParam == E_GOFORWORD_TIMER)
 			{
-				if (msg.wParam == E_GOFORWORD_TIMER)
-				{
-					SwitchUIState();
-				}
-
+				SwitchUIState();
 			}
-	
+
+		}
+
 	}
 
 
@@ -323,7 +321,7 @@ LRESULT CEFWebkitBrowserWnd::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARA
 }
 
 
- 
+
 void CEFWebkitBrowserWnd::OnInitComplate()
 {
 	if (pWKEWebkitCtrl_)
@@ -401,7 +399,7 @@ void CEFWebkitBrowserWnd::OnAfterCreate(int nWebBrowserID)
 void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 {
 	TCHAR strDebugMsg[128];
-	
+
 	int nCountWebtab = pWebTabContainer_->GetCount();
 
 	for (int idx = 0; idx < nCountWebtab; idx++)
@@ -415,11 +413,11 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 
 		if ((pTag != NULL) && (pTag->nID_ == nBrowserID))
 		{
-			
+
 			int nSize = pWebTabContainer_->GetCount();
 
 			int nIdx = pWebTabContainer_->GetItemIndex(pOpt);
-			
+
 			pWebTabContainer_->Remove(pOpt);
 
 			if (nIdx != -1)
@@ -439,7 +437,7 @@ void CEFWebkitBrowserWnd::OnBrowserClose(int nBrowserID)
 					pWKEWebkitCtrl_->ReFresh(pShilfTag->nID_);
 					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(pShilfTag->nID_).c_str());
 					pShilfOption->Selected(true);
-					
+
 				}
 
 			}
@@ -469,7 +467,7 @@ void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 		{
 			if (pTag = (COptionTag*)pCurrentOpt->GetTag())
 			{
-				if (pTag->nID_== nBrowserID)
+				if (pTag->nID_ == nBrowserID)
 				{
 					pURLEditCtrl_->SetText(pWKEWebkitCtrl_->GetFinalURL(nBrowserID).c_str());
 					SwitchUIState();
@@ -477,14 +475,6 @@ void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 			}
 		}
 	}
-
-	////执行js测试
-	//CefRefPtr<CefBrowser> pBrower = pWKEWebkitCtrl_->GetBrowserByID(nBrowserID);
-	//if (pBrower)
-	//{
-	//	pBrower->GetMainFrame().get()->ExecuteJavaScript("alert('ExecuteJavaScript succeed!');", pBrower->GetMainFrame().get()->GetURL(), 0);
-	//}
-	
 
 	memset(szBuf, '\0', sizeof(szBuf));
 	CefString* pStrComplateURL = (CefString*)lParam;
@@ -507,7 +497,7 @@ void CEFWebkitBrowserWnd::OnWebLoadStart(WPARAM wParam, LPARAM lParam)
 		StringCbPrintf(szBuf, sizeof(szBuf), _T("正在加载:%s"), pStrComplateURL->c_str());
 		delete pStrComplateURL;
 	}
-	
+
 	pWebStateCtrl_->SetText(szBuf);
 
 }
@@ -562,5 +552,4 @@ void CEFWebkitBrowserWnd::SwitchUIState()
 		}
 	}
 
-	
 }

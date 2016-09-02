@@ -94,7 +94,7 @@ BOOL WINAPI MYCreateProcessA(
 void DoHook()
 {
 
-	HMODULE hKernel32 = LoadLibrary(L"kernel32.dll");
+ 	HMODULE hKernel32 = LoadLibrary(L"kernel32.dll");
 
 	if (!(prealCreateProcessA = (realCreateProcessAPtr)GetProcAddress(hKernel32, "CreateProcessA")))
 	{
