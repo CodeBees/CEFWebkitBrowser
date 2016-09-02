@@ -101,8 +101,6 @@ bool CCefClientHandler::DoClose(CefRefPtr<CefBrowser> browser)
 
 	lock_.Release();
 
-
-
 	if (browser_list_.size() == 0) {
 		// Set a flag to indicate that the window close should be allowed.
 		is_closing_ = true;
@@ -214,10 +212,25 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
 }
 
+#define MENU_ID_USER_OPENLINK  MENU_ID_USER_FIRST+200
+
 void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
 {
 	//在这里，我添加了自己想要的菜单  
 	cef_context_menu_type_flags_t flag = params->GetTypeFlags();
+
+	if (flag&CM_TYPEFLAG_LINK)
+	{
+		model->Clear(); //清除所有菜单项
+		
+		model->AddItem(MENU_ID_USER_OPENLINK, L"在新标签页中打开(&T)...");//增加菜单项
+		model->AddSeparator(); //加分隔线
+		model->AddItem(MENU_ID_COPY, L"复制");//增加菜单项
+		//model->SetEnabled(MENU_ID_USER_OPENLINK, false); //禁用菜单项。
+		return;
+	}
+
+
 	if (flag & CM_TYPEFLAG_PAGE)
 	{//普通页面的右键消息  
 		model->SetLabel(MENU_ID_BACK, L"后退");
@@ -241,10 +254,36 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 		model->SetLabel(MENU_ID_DELETE, L"删除");
 		model->SetLabel(MENU_ID_SELECT_ALL, L"全选");
 	}
+
+
+
 }
 
 bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags)
 {
+	CefString strLinkURL;
+	CefString strURLLink;
+	CefString* strTargetURL = nullptr;
+	
+
+
+
+	switch (command_id)
+	{
+	
+	case MENU_ID_USER_OPENLINK:
+
+		strTargetURL = new CefString(params->GetLinkUrl());
+		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);
+
+		//strLinkURL = params->GetLinkUrl();
+		//strURLLink = params->GetUnfilteredLinkUrl();
+		break;
+	default:
+		break;
+	}
+
+
 	return false;
 }
 

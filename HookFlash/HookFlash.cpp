@@ -118,7 +118,7 @@ void DoHook()
 		MessageBox(GetForegroundWindow(), _T("Hook Failed"), _T("Error"), MB_OK);
 	}
 
-	
+
 	ULONG ACLEntriesA[1] = { 0 };
 	ULONG ACLEntriesW[1] = { 0 };
 

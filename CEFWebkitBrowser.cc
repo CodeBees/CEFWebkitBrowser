@@ -478,12 +478,12 @@ void CEFWebkitBrowserWnd::OnWebLoadEnd(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	//÷¥––js≤‚ ‘
-	CefRefPtr<CefBrowser> pBrower = pWKEWebkitCtrl_->GetBrowserByID(nBrowserID);
-	if (pBrower)
-	{
-		pBrower->GetMainFrame().get()->ExecuteJavaScript("alert('ExecuteJavaScript succeed!');", pBrower->GetMainFrame().get()->GetURL(), 0);
-	}
+	////÷¥––js≤‚ ‘
+	//CefRefPtr<CefBrowser> pBrower = pWKEWebkitCtrl_->GetBrowserByID(nBrowserID);
+	//if (pBrower)
+	//{
+	//	pBrower->GetMainFrame().get()->ExecuteJavaScript("alert('ExecuteJavaScript succeed!');", pBrower->GetMainFrame().get()->GetURL(), 0);
+	//}
 	
 
 	memset(szBuf, '\0', sizeof(szBuf));
