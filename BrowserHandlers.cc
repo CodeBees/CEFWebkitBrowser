@@ -213,6 +213,7 @@ bool CCefClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 }
 
 #define MENU_ID_USER_OPENLINK  MENU_ID_USER_FIRST+200
+#define MENU_ID_USER_COPYLINK  MENU_ID_USER_FIRST+201
 
 void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
 {
@@ -223,23 +224,24 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 	{
 		model->Clear(); //清除所有菜单项
 		
-		model->AddItem(MENU_ID_USER_OPENLINK, L"在新标签页中打开(&T)...");//增加菜单项
+		model->AddItem(MENU_ID_USER_OPENLINK, L"在新标签页中打开(&T)");//增加菜单项
 		model->AddSeparator(); //加分隔线
-		model->AddItem(MENU_ID_COPY, L"复制");//增加菜单项
+		model->AddItem(MENU_ID_USER_COPYLINK, L"复制链接地址(&C)");//增加菜单项
 		//model->SetEnabled(MENU_ID_USER_OPENLINK, false); //禁用菜单项。
 		return;
 	}
 
 
 	if (flag & CM_TYPEFLAG_PAGE)
-	{//普通页面的右键消息  
+	{//普通页面的右键消息
+		
 		model->SetLabel(MENU_ID_BACK, L"后退");
 		model->SetLabel(MENU_ID_FORWARD, L"前进");
 		model->SetLabel(MENU_ID_VIEW_SOURCE, L"查看源代码");
 		model->SetLabel(MENU_ID_PRINT, L"打印");
-		model->SetLabel(MENU_ID_RELOAD, L"刷新");
-		model->SetLabel(MENU_ID_RELOAD_NOCACHE, L"强制刷新");
-		model->SetLabel(MENU_ID_STOPLOAD, L"停止加载");
+		model->AddItem(MENU_ID_RELOAD, L"刷新");
+		model->AddItem(MENU_ID_RELOAD_NOCACHE, L"强制刷新");
+		model->AddItem(MENU_ID_STOPLOAD, L"停止加载");
 		model->SetLabel(MENU_ID_REDO, L"重复");
 	
 		
@@ -255,17 +257,16 @@ void CCefClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRe
 		model->SetLabel(MENU_ID_SELECT_ALL, L"全选");
 	}
 
-
-
 }
 
 bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,CefRefPtr<CefContextMenuParams> params, int command_id, EventFlags event_flags)
 {
-	CefString strLinkURL;
+	//CefString strLinkURL;
 	CefString strURLLink;
 	CefString* strTargetURL = nullptr;
-	
-
+	HGLOBAL hglbCopy;
+	LPTSTR  lptstrCopy;
+	int nBuffLength = 0;
 
 
 	switch (command_id)
@@ -274,10 +275,51 @@ bool CCefClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefR
 	case MENU_ID_USER_OPENLINK:
 
 		strTargetURL = new CefString(params->GetLinkUrl());
-		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);
+		::PostMessage(hWnd_, UM_CEF_WEBLOADPOPUP, (WPARAM)0, (LPARAM)strTargetURL);		
+		break;
+	case MENU_ID_USER_COPYLINK:
 
-		//strLinkURL = params->GetLinkUrl();
-		//strURLLink = params->GetUnfilteredLinkUrl();
+
+
+		if (!OpenClipboard(frame->GetBrowser().get()->GetHost().get()->GetWindowHandle()))
+		{
+			return FALSE;
+		}
+
+		EmptyClipboard();
+
+		// Allocate a global memory object for the text. 
+
+		strURLLink = params->GetUnfilteredLinkUrl();
+
+		if (strURLLink.length()!=0)
+		{
+			nBuffLength = (strURLLink.length() + 1) * sizeof(TCHAR);
+
+			hglbCopy = GlobalAlloc(GMEM_MOVEABLE, nBuffLength);
+
+			if (hglbCopy == NULL)
+			{
+				CloseClipboard();
+				return FALSE;
+			}
+
+			// Lock the handle and copy the text to the buffer. 
+
+			lptstrCopy = (LPTSTR)::GlobalLock(hglbCopy);
+			memset(lptstrCopy, '\0', nBuffLength);
+			memcpy(lptstrCopy, strURLLink.c_str(), nBuffLength- sizeof(TCHAR));
+			
+			GlobalUnlock(hglbCopy); // 解除锁定剪贴板
+			// Place the handle on the clipboard. 
+
+			//SetClipboardData(CF_TEXT, hglbCopy);
+			SetClipboardData(CF_UNICODETEXT, hglbCopy);// CF_UNICODETEXT为Unicode编码  
+			
+		}
+
+		CloseClipboard();
+
 		break;
 	default:
 		break;
