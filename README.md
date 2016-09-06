@@ -11,4 +11,6 @@ CEF用的是 https://cefbuilds.com/ 下载的编译好的版本，现在采用�
 这个里面收集了一些CEF的文档和资料，可以参考学习
 https://github.com/fanfeilong/cefutil
 
+编译好程序下载地址: http://download.csdn.net/detail/x356982611/9623253
+
 ![image](https://github.com/CodeBees/CEFWebkitBrowser/blob/master/show.png)
