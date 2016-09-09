@@ -120,8 +120,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	CShadowWindow shadowwnd;
 	CShadowWindow::Initialize(hInstance);
 	shadowwnd.Create(pFrame.GetHWND());
-	shadowwnd.SetSize(4);
-	shadowwnd.SetPosition(4, 4);
+	shadowwnd.SetSize(6);
+	//shadowwnd.SetPosition(4, 4);
+	shadowwnd.SetPosition(0, 0);
 	shadowwnd.SetColor(RGB(22, 22, 22));
 
 	//   pFrame.ShowWindow(true);
