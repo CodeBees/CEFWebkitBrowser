@@ -105,6 +105,7 @@ void CEFWebkitBrowserWnd::OnClick(TNotifyUI & msg)
 
 	}
 
+	__super::OnClick(msg);
 
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="1200,800" sizebox="8,0,8,8" caption="0,0,0,50" mininfo="288,50">
+<Window size="1200,800" sizebox="8,0,8,8" caption="0,0,0,50" mininfo="800,600">
     <Default name="OptionEx" value="bordersize=&quot;0&quot; float=&quot;f&quot; align=&quot;center&quot; normalimage=&quot;file=&apos;TabBtnBk.png&apos; source=&apos;0,0,87,30&apos; corner=&apos;15,15,15,15&apos;&quot; hotimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;15,15,15,15&apos; source=&apos;87,0,174,30&apos;&quot; selectedimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;15,15,15,15&apos; source=&apos;174,0,261,30&apos;&quot;" />
     <Default name="OptionEx2" value="bordersize=&quot;0&quot; float=&quot;f&quot; align=&quot;center&quot; normalimage=&quot;file=&apos;TabBtnBk.png&apos; source=&apos;0,0,87,30&apos; corner=&apos;2,1,2,1&apos;&quot; hotimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;2,1,2,1&apos; source=&apos;87,0,174,30&apos;&quot; selectedimage=&quot;file=&apos;TabBtnBk.png&apos; corner=&apos;2,1,2,1&apos; source=&apos;174,0,261,30&apos;&quot;" />
     <VerticalLayout name="framework" bkcolor="#FFFFFFFF">

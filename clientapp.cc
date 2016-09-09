@@ -75,10 +75,10 @@ void CCefClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
 	CefRefPtr<CefV8Value> str = CefV8Value::CreateString("C++ created Value!");
 	object->SetValue("jsValue", str, V8_PROPERTY_ATTRIBUTE_NONE);
 
-	CefRefPtr<CefV8Accessor> accessor=new MyV8Accessor;
+	CefRefPtr<CefV8Accessor> accessor = new MyV8Accessor;
 	CefRefPtr<CefV8Value> obj = CefV8Value::CreateObject(accessor);
 
-	obj->SetValue("myval", V8_ACCESS_CONTROL_DEFAULT,V8_PROPERTY_ATTRIBUTE_NONE);
+	obj->SetValue("myval", V8_ACCESS_CONTROL_DEFAULT, V8_PROPERTY_ATTRIBUTE_NONE);
 
 	object->SetValue("myobject", obj, V8_PROPERTY_ATTRIBUTE_NONE);
 
