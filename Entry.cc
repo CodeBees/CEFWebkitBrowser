@@ -3,10 +3,12 @@
 #include "clientapp.h"
 #include <Shlobj.h>
 #include <strsafe.h>
+#include "MiniDumper.h"
 
 //记得拷贝resource中的资源到运行目录
 
 
+CMiniDumper g_miniDumper(true);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {

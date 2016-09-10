@@ -15,7 +15,7 @@
             </HorizontalLayout>
         </HorizontalLayout>
         <HorizontalLayout name="ui_hl_urltabs" height="30">
-            <Option name="ui_btn_newpage" text=" + " tooltip="添加新页签" width="30" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="tabbar_normal1.png" hotimage="tabbar_hover1.png" pushedimage="tabbar_pushed1.png" group="ui_grp_webtab" selectedimage="tabbar_pushed1.png" selectedtextcolor="#FF000000" />
+            <Option name="ui_btn_newpage" tooltip="添加新页签" width="28" height="30" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" valign="center" normalimage="file=&apos;newtab.png&apos; dest=&apos;0,6,28,24&apos;" group="ui_grp_webtab" selectedimage="file=&apos;newtab.png&apos; dest=&apos;0,6,28,24&apos;" selectedpushedimage="file=&apos;newtab_p.png&apos; dest=&apos;0,6,28,24&apos;" selectedhotimage="file=&apos;newtab_h.png&apos; dest=&apos;0,6,28,24&apos;" selectedtextcolor="#FF000000" />
         </HorizontalLayout>
         <VerticalLayout height="60" bkimage="Main-Tab.png" bkcolor="#FFFFFBF0" childpadding="2">
             <Control />

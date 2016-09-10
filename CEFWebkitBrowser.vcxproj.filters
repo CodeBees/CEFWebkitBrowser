@@ -16,6 +16,9 @@
     <Filter Include="control">
       <UniqueIdentifier>{805cebca-0e10-474d-a975-0cfca4826da4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dump">
+      <UniqueIdentifier>{3f91955c-d24c-4192-863d-1460de665bd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -45,6 +48,9 @@
     <ClInclude Include="CEFV8HandlerEx.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MiniDumper.h">
+      <Filter>dump</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -67,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="CEFV8HandlerEx.cc">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniDumper.cpp">
+      <Filter>dump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
